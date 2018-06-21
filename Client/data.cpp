@@ -108,17 +108,12 @@ void Data::loginSlot(QString acountInfo)
 	QStringList acountInfoList = acountInfo.split(' ');
 
 	//粘包解决！
-	QString msg = QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1];
-	QByteArray sendMsg;
-	QDataStream out(&sendMsg, QIODevice::WriteOnly);
+	QString msg = QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]; //要发送的信息
+	QByteArray sendMsg; //发送的包
+	QDataStream out(&sendMsg, QIODevice::WriteOnly); //用来操纵包的QDataStream
 	out.setByteOrder(QDataStream::BigEndian);
-	out << qint32(0) << msg;
-	out.device()->seek(0);
-	out << sendMsg.size();
-	connectToServer->write(sendMsg);
-
-	/*connectToServer->write((QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]).toUtf8());
-	connectToServer->waitForBytesWritten();*/
+	out << static_cast<qint32>(msg.size()) << msg; //读入一个4字节长度的东西占位，是之后发送的消息的长度，然后写入发送的消息
+	connectToServer->write(sendMsg); //发送~
 }
 
 void Data::registerSlot(QString acountInfo)

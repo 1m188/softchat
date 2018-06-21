@@ -18,4 +18,11 @@ struct UserInfo
 	UserInfo::UserInfo(QString id, QString name) : id(id), name(name) {}
 };
 
+struct Head
+{
+	int length;
+
+	Head::Head() :length(0) {}
+};
+
 #endif // !EXTERN_H

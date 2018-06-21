@@ -1,7 +1,7 @@
 #include "clientthread.h"
 
 ClientThread::ClientThread(QObject *parent, qintptr handle)
-	: QThread(parent), connectToClient(nullptr), handle(handle), id("")
+	: QThread(parent), connectToClient(nullptr), handle(handle), id(""), headLen(sizeof(qint32)), msgLen(0), buffer(QByteArray())
 {
 
 }
@@ -23,5 +23,26 @@ void ClientThread::run()
 
 void ClientThread::getMsgFromClient()
 {
-	emit getMsgFromClientSignal(QString::fromUtf8(connectToClient->readAll()));
+	//Õ³°ü½â¾ö£¡
+	buffer.append(connectToClient->readAll());
+	int totalLen = buffer.size();
+	while (totalLen)
+	{
+		QDataStream in(&buffer, QIODevice::ReadOnly);
+		in.setByteOrder(QDataStream::BigEndian);
+		if (totalLen >= headLen)
+		{
+			in >> msgLen;
+			if (totalLen >= msgLen)
+			{
+				QString msg;
+				in >> msg;
+				emit getMsgFromClientSignal(msg);
+				buffer = buffer.right(totalLen - msgLen);
+				totalLen = buffer.size();
+			}
+		}
+	}
+
+	//emit getMsgFromClientSignal(QString::fromUtf8(connectToClient->readAll()));
 }

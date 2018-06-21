@@ -106,8 +106,19 @@ void Data::getMsgFromServer()
 void Data::loginSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->write((QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]).toUtf8());
-	connectToServer->waitForBytesWritten();
+
+	//Õ³°ü½â¾ö£¡
+	QString msg = QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1];
+	QByteArray sendMsg;
+	QDataStream out(&sendMsg, QIODevice::WriteOnly);
+	out.setByteOrder(QDataStream::BigEndian);
+	out << qint32(0) << msg;
+	out.device()->seek(0);
+	out << sendMsg.size();
+	connectToServer->write(sendMsg);
+
+	/*connectToServer->write((QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]).toUtf8());
+	connectToServer->waitForBytesWritten();*/
 }
 
 void Data::registerSlot(QString acountInfo)

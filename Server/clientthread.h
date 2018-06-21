@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include "QTcpSocket"
+#include "QDataStream"
 
 class ClientThread : public QThread
 {
@@ -16,6 +17,10 @@ private:
 	QTcpSocket *connectToClient;
 	qintptr handle;
 	QString id;
+
+	const qint32 headLen;
+	qint32 msgLen;
+	QByteArray buffer;
 
 public:
 	const QString getID() const { return id; }

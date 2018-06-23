@@ -11,8 +11,7 @@ Data::Data(QObject *parent)
 
 Data::~Data()
 {
-	connectToServer->write(QString("disconnect").toUtf8());
-	connectToServer->waitForBytesWritten();
+	connectToServer->writeMsg("disconnect");
 
 	delete myInfo;
 }
@@ -34,11 +33,8 @@ void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
 	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList);
 	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot);
 
-	connectToServer->write(QString("myInfo").toUtf8());
-	connectToServer->waitForBytesWritten();
-	connectToServer->waitForReadyRead();
-	connectToServer->write(QString("friendList").toUtf8());
-	connectToServer->waitForBytesWritten();
+	connectToServer->writeMsg("myInfo");
+	connectToServer->writeMsg("friendList");
 }
 
 void Data::init()
@@ -46,8 +42,8 @@ void Data::init()
 	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
 	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
 
-	connectToServer = new QTcpSocket(this);
-	connect(connectToServer, &QTcpSocket::readyRead, this, &Data::getMsgFromServer);
+	connectToServer = new TcpSocket(this);
+	connect(connectToServer, &TcpSocket::readyRead, this, &Data::getMsgFromServer);
 	connectToServer->connectToHost("127.0.0.1", 8888);
 
 	myInfo = new UserInfo();
@@ -106,25 +102,16 @@ void Data::getMsgFromServer()
 void Data::loginSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-
-	//粘包解决！
-	QString msg = QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]; //要发送的信息
-	QByteArray sendMsg; //发送的包
-	QDataStream out(&sendMsg, QIODevice::WriteOnly); //用来操纵包的QDataStream
-	out.setByteOrder(QDataStream::BigEndian);
-	out << static_cast<qint32>(msg.size()) << msg; //读入一个4字节长度的东西占位，是之后发送的消息的长度，然后写入发送的消息
-	connectToServer->write(sendMsg); //发送~
+	connectToServer->writeMsg(QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]);
 }
 
 void Data::registerSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->write((QString("register") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]).toUtf8());
-	connectToServer->waitForBytesWritten();
+	connectToServer->writeMsg(QString("register") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]);
 }
 
 void Data::sendMsgSlot(QString msg, QString recverID)
 {
-	connectToServer->write((QString("Message") + ' ' + myInfo->id + ' ' + recverID + ' ' + msg).toUtf8());
-	connectToServer->waitForBytesWritten();
+	connectToServer->writeMsg(QString("Message") + ' ' + myInfo->id + ' ' + recverID + ' ' + msg);
 }

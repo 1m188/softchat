@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "QThread"
-#include "QTcpSocket"
+#include "tcpsocket.h"
 #include "logingui.h"
 #include "maingui.h"
 #include "extern.h"
@@ -19,7 +19,7 @@ public:
 	~Data();
 
 private:
-	QTcpSocket *connectToServer;
+	TcpSocket *connectToServer;
 	UserInfo *myInfo;
 
 public:

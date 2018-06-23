@@ -39,6 +39,9 @@
     <Filter Include="界面\聊天面板">
       <UniqueIdentifier>{0ecd09c4-3f8d-4c97-bd46-1fad7fc9eee6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{cad4aa6c-561e-4dc4-b2e8-73c960f7a198}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_client.cpp">
@@ -90,6 +93,15 @@
     <ClCompile Include="chatframe.cpp">
       <Filter>界面\聊天面板</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_tcpsocket.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_tcpsocket.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="tcpsocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="client.qrc">
@@ -109,6 +121,9 @@
     </CustomBuild>
     <CustomBuild Include="chatframe.h">
       <Filter>界面\聊天面板</Filter>
+    </CustomBuild>
+    <CustomBuild Include="tcpsocket.h">
+      <Filter>socket</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

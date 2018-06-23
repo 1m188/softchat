@@ -16,6 +16,18 @@ Data::~Data()
 	delete myInfo;
 }
 
+void Data::init()
+{
+	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
+	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
+
+	connectToServer = new TcpSocket(this);
+	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer);
+	connectToServer->connectToHost("127.0.0.1", 8888);
+
+	myInfo = new UserInfo();
+}
+
 void Data::addSignalSlotsForClassSlot(LoginGui *loginGui)
 {
 	connect(loginGui, &LoginGui::loginSignal, this, &Data::loginSlot);
@@ -37,22 +49,8 @@ void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
 	connectToServer->writeMsg("friendList");
 }
 
-void Data::init()
+void Data::getMsgFromServer(QString msg)
 {
-	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
-	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
-
-	connectToServer = new TcpSocket(this);
-	connect(connectToServer, &TcpSocket::readyRead, this, &Data::getMsgFromServer);
-	connectToServer->connectToHost("127.0.0.1", 8888);
-
-	myInfo = new UserInfo();
-}
-
-void Data::getMsgFromServer()
-{
-	QString msg = QString::fromUtf8(connectToServer->readAll());
-
 	qDebug() << msg;
 
 	if (msg == "loginSuccess")

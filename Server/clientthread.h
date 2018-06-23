@@ -2,7 +2,7 @@
 #define CLIENTTHREAD_H
 
 #include <QThread>
-#include "QTcpSocket"
+#include "tcpsocket.h"
 #include "QDataStream"
 
 class ClientThread : public QThread
@@ -14,13 +14,9 @@ public:
 	~ClientThread();
 
 private:
-	QTcpSocket *connectToClient;
+	TcpSocket *connectToClient;
 	qintptr handle;
 	QString id;
-
-	const qint32 headLen;
-	qint32 msgLen;
-	QByteArray buffer;
 
 public:
 	const QString getID() const { return id; }
@@ -32,9 +28,6 @@ protected:
 signals:
 	void getMsgFromClientSignal(QString msg);
 	void sendMsgToClientSignal(QString msg);
-
-private slots:
-	void getMsgFromClient();
 };
 
 #endif // CLIENTTHREAD_H

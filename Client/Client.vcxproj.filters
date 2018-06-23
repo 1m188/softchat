@@ -93,14 +93,14 @@
     <ClCompile Include="chatframe.cpp">
       <Filter>界面\聊天面板</Filter>
     </ClCompile>
+    <ClCompile Include="tcpsocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_tcpsocket.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_tcpsocket.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="tcpsocket.cpp">
-      <Filter>socket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

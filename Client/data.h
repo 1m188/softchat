@@ -45,7 +45,7 @@ private slots:
 	void addSignalSlotsForClassSlot(MainGui *mainGui);
 
 	void init();
-	void getMsgFromServer();
+	void getMsgFromServer(QString msg);
 
 	void loginSlot(QString acountInfo);
 	void registerSlot(QString acountInfo);

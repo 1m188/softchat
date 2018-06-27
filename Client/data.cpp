@@ -20,7 +20,8 @@ void Data::init()
 	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
 	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
 
-	connectToServer = new TcpSocket(this);
+	connectToServer = new TcpSocket(nullptr);
+	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater);
 	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer);
 	connectToServer->connectToHost("127.0.0.1", 8888);
 

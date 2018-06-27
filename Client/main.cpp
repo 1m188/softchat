@@ -22,6 +22,6 @@ int main(int argc, char *argv[])
 		mainGui->show();
 		a.exec();
 	}
-	data->deleteLater();
+	delete data;
 	return 0;
 }

@@ -20,12 +20,13 @@ private:
 
 public:
 	const QString getID() const { return id; }
-	void setID(QString _id) { id = _id; }
+	void setID(QString id) { this->id = id; }
 
 protected:
 	void run();
 
 signals:
+	void disconnectToClientSignal();
 	void getMsgFromClientSignal(QString msg);
 	void sendMsgToClientSignal(QString msg);
 };

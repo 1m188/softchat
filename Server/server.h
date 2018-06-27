@@ -26,6 +26,7 @@ protected:
 	void incomingConnection(qintptr handle);
 
 private slots:
+	void disconnectToClientSlot();
 	void getMsgFromClientSlot(QString msg);
 };
 

@@ -24,9 +24,18 @@ void Server::incomingConnection(qintptr handle)
 	qDebug() << "a new connection with handle" << handle;
 
 	ClientThread *clientThread = new ClientThread(nullptr, handle);
+	connect(clientThread, &ClientThread::disconnectToClientSignal, this, &Server::disconnectToClientSlot);
 	connect(clientThread, &ClientThread::getMsgFromClientSignal, this, &Server::getMsgFromClientSlot);
 	threadPool.push_back(clientThread);
 	clientThread->start();
+}
+
+void Server::disconnectToClientSlot()
+{
+	ClientThread *s = dynamic_cast<ClientThread *>(sender());
+	s->exit();
+	threadPool.removeOne(s);
+	s->deleteLater();
 }
 
 void Server::getMsgFromClientSlot(QString msg)
@@ -35,13 +44,7 @@ void Server::getMsgFromClientSlot(QString msg)
 
 	qDebug() << s->getID() << "id send message" << msg;
 
-	if (msg == "disconnect")
-	{
-		s->quit();
-		threadPool.removeOne(s);
-		s->deleteLater();
-	}
-	else if (msg == "myInfo")
+	if (msg == "myInfo")
 	{
 		QString id = s->getID();
 		query.exec(QString("select name from acount where id='%1';").arg(id)); //查询自己id对应的id和昵称作为自己的用户信息返回

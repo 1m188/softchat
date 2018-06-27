@@ -3,16 +3,15 @@
 Data::Data(QObject *parent)
 	: QObject(parent), connectToServer(nullptr), myInfo(nullptr)
 {
-	QThread *thread = new QThread(this);
+	QThread *thread = new QThread();
 	moveToThread(thread);
 	connect(thread, &QThread::started, this, &Data::init);
+	connect(this, &Data::destroyed, thread, &QThread::quit);
 	thread->start();
 }
 
 Data::~Data()
 {
-	connectToServer->writeMsg("disconnect");
-
 	delete myInfo;
 }
 

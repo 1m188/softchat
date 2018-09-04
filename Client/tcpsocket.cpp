@@ -57,6 +57,8 @@ void TcpSocket::getMsg()
 		{
 			if (totalLen >= headLen + msgLen)
 			{
+				int temp = 0;
+				in >> temp;
 				QString msg;
 				in >> msg;
 				emit getMsgSignal(msg);

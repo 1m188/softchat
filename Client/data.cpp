@@ -7,6 +7,7 @@ Data::Data(QObject *parent)
 	moveToThread(thread);
 	connect(thread, &QThread::started, this, &Data::init);
 	connect(this, &Data::destroyed, thread, &QThread::quit);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 	thread->start();
 }
 

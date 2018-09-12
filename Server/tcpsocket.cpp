@@ -1,4 +1,5 @@
 #include "tcpsocket.h"
+#include "QDataStream"
 
 TcpSocket::TcpSocket(QObject *parent)
 	: QTcpSocket(parent), buffer(QByteArray()), headLen(sizeof(qint32)), msgLen(0)

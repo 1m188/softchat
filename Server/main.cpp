@@ -3,7 +3,9 @@
 
 int main(int argc, char *argv[])
 {
-	//QApplication::addLibraryPath("./plugins"); //做发布版本时要加上
+#ifdef NDEBUG
+	QApplication::addLibraryPath("./plugins"); //做发布版本时要加上
+#endif // NDEBUG
 
 	QApplication a(argc, argv);
 

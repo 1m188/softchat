@@ -1,116 +1,171 @@
 #include "data.h"
+#include "QThread"
 
 Data::Data(QObject *parent)
 	: QObject(parent), connectToServer(nullptr), myInfo(nullptr)
 {
+	//把本类的所有信号槽响应放在另一个线程中
 	QThread *thread = new QThread();
 	moveToThread(thread);
-	connect(thread, &QThread::started, this, &Data::init);
+	connect(thread, &QThread::started, this, &Data::init); //线程开始则启动初始化
+	//资源管理
 	connect(this, &Data::destroyed, thread, &QThread::quit);
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-	thread->start();
+	thread->start(); //启动
 }
 
 Data::~Data()
 {
+	//释放相关内存资源
 	delete myInfo;
 }
 
 void Data::init()
 {
+	//给外部用来调用的接口中发送的信号和相关信号槽的连接
 	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
 	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
 
-	connectToServer = new TcpSocket(nullptr);
-	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater);
-	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer);
-	connectToServer->connectToHost("127.0.0.1", 8888);
+	connectToServer = new TcpSocket(nullptr); //初始化和服务器连接的socket
+	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater); //资源管理
+	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer); //从服务器获取的消息处理
+	connectToServer->connectToHost("127.0.0.1", 8888); //连接到相关服务器（本地）的8888端口
 
-	myInfo = new UserInfo();
+	myInfo = new UserInfo(); //初始化自己的用户信息
 }
 
 void Data::addSignalSlotsForClassSlot(LoginGui *loginGui)
 {
-	connect(loginGui, &LoginGui::loginSignal, this, &Data::loginSlot);
-	connect(loginGui, &LoginGui::registerSignal, this, &Data::registerSlot);
-	connect(this, &Data::loginSignal, loginGui, &LoginGui::accept);
-	connect(this, &Data::loginFailedSignal, loginGui, &LoginGui::loginFailedSlot);
-	connect(this, &Data::loginRepeatSignal, loginGui, &LoginGui::loginRepeatSlot);
-	connect(this, &Data::registerSuccessSignal, loginGui, &LoginGui::registerSuccessSignal);
+	connect(loginGui, &LoginGui::loginRequestSignal, this, &Data::loginRequestSlot); //登陆请求
+	connect(loginGui, &LoginGui::registerRequestSignal, this, &Data::registerRequestSlot); //注册请求
+	connect(this, &Data::loginSignal, loginGui, &LoginGui::accept); //使之登陆
+	connect(this, &Data::loginFailedSignal, loginGui, &LoginGui::loginFailedSlot); //登陆失败
+	connect(this, &Data::loginRepeatSignal, loginGui, &LoginGui::loginRepeatSlot); //重复登陆
+	connect(this, &Data::registerSuccessSignal, loginGui, &LoginGui::registerSuccessSignal); //注册成功
 }
 
 void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
 {
-	connect(mainGui, &MainGui::sendMsgSignal, this, &Data::sendMsgSlot);
-	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot);
-	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList);
-	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot);
+	connect(mainGui, &MainGui::sendMsgSignal, this, &Data::sendMsgSlot); //发送聊天消息
+	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot); //获取自己的用户信息
+	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList); //获取好友列表并且更新好友列表
+	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot); //接收到聊天信息
 
-	connectToServer->writeMsg("myInfo");
-	connectToServer->writeMsg("friendList");
+	connectToServer->writeMsg("MyInfoRequest"); //发送自己用户信息请求
+	connectToServer->writeMsg("FriendListRequest"); //发送好友列表请求
 }
 
 void Data::getMsgFromServer(QString msg)
 {
+	//输出调试信息
+#ifdef _DEBUG
 	qDebug() << msg;
+#endif // _DEBUG
 
-	if (msg == "loginSuccess")
+	//获取消息通过空格分隔的列表
+	QStringList msgList = msg.split(' ');
+	//判断
+	//登陆成功
+	if (msgList[0] == "LoginSuccess")
 	{
-		emit loginSignal();
+		loginSuccessHandle(msgList);
 	}
-	else if (msg == "loginFailed")
+	//登陆失败
+	else if (msgList[0] == "LoginFailed")
 	{
-		emit loginFailedSignal();
+		loginFailedHandle(msgList);
 	}
-	else if (msg == "loginRepeat")
+	//重复登陆
+	else if (msgList[0] == "LoginRepeat")
 	{
-		emit loginRepeatSignal();
+		loginRepeatHandle(msgList);
 	}
-	else
+	//注册成功
+	else if (msgList[0] == "RegisterSuccess")
 	{
-		QStringList msgList = msg.split(' ');
-
-		if (msgList[0] == "registerSuccess")
-		{
-			emit registerSuccessSignal(msgList[1]);
-		}
-		else if (msgList[0] == "myInfo")
-		{
-			myInfo->id = msgList[1];
-			myInfo->name = msgList[2];
-			emit getMyInfoSignal(msgList[1], msgList[2]);
-		}
-		else if (msgList[0] == "friendList")
-		{
-			msgList.pop_front();
-			emit getFriendListSignal(msgList);
-		}
-		else if (msgList[0] == "Message")
-		{
-			QString senderID = msgList[1];
-			QString recverID = msgList[2];
-			msgList.pop_front();
-			msgList.pop_front();
-			msgList.pop_front();
-			QString msg = msgList.join(' ');
-			emit getMsgSignal(msg, senderID);
-		}
+		registerSuccessHandle(msgList);
+	}
+	//获取自己的用户信息
+	else if (msgList[0] == "MyInfo")
+	{
+		getMyInfoHandle(msgList);
+	}
+	//获取好友列表
+	else if (msgList[0] == "FriendList")
+	{
+		getFriendListHandle(msgList);
+	}
+	//接收好友发送过来的聊天消息
+	else if (msgList[0] == "Message")
+	{
+		messageHandle(msgList);
 	}
 }
 
-void Data::loginSlot(QString acountInfo)
+void Data::loginSuccessHandle(QStringList msgList)
 {
-	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->writeMsg(QString("login") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]);
+	emit loginSignal();
 }
 
-void Data::registerSlot(QString acountInfo)
+void Data::loginFailedHandle(QStringList msgList)
+{
+	emit loginFailedSignal();
+}
+
+void Data::loginRepeatHandle(QStringList msgList)
+{
+	emit loginRepeatSignal();
+}
+
+void Data::registerSuccessHandle(QStringList msgList)
+{
+	emit registerSuccessSignal(msgList[1]);
+}
+
+void Data::getMyInfoHandle(QStringList msgList)
+{
+	//设置自己用户信息
+	myInfo->id = msgList[1];
+	myInfo->name = msgList[2];
+	//传递给主界面
+	emit getMyInfoSignal(msgList[1], msgList[2]);
+}
+
+void Data::getFriendListHandle(QStringList msgList)
+{
+	msgList.pop_front(); //去掉FriendList的消息头
+	emit getFriendListSignal(msgList); //把纯粹的好友列表的信息发送过去
+}
+
+void Data::messageHandle(QStringList msgList)
+{
+	QString senderID = msgList[1]; //获取发送方id
+	QString recverID = msgList[2]; //获取接收方id
+	//去掉Message、发送方id和接收方id
+	msgList.pop_front();
+	msgList.pop_front();
+	msgList.pop_front();
+	//获取完整的消息
+	QString msg = msgList.join(' ');
+	//发送消息和发送方id
+	emit getMsgSignal(msg, senderID);
+}
+
+
+
+void Data::loginRequestSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->writeMsg(QString("register") + ' ' + acountInfoList[0] + ' ' + acountInfoList[1]);
+	connectToServer->writeMsg(QString("LoginRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
+}
+
+void Data::registerRequestSlot(QString acountInfo)
+{
+	QStringList acountInfoList = acountInfo.split(' ');
+	connectToServer->writeMsg(QString("RegisterRequest %1 %2").arg(acountInfoList[0].arg(acountInfoList[1])));
 }
 
 void Data::sendMsgSlot(QString msg, QString recverID)
 {
-	connectToServer->writeMsg(QString("Message") + ' ' + myInfo->id + ' ' + recverID + ' ' + msg);
+	connectToServer->writeMsg(QString("Message %1 %2 %3").arg(myInfo->id).arg(recverID).arg(msg));
 }

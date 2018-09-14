@@ -1,15 +1,23 @@
 #include "registergui.h"
+#include "QApplication"
+#include "QDeskTopWidget"
+#include "QLabel"
+#include "QPushButton"
+#include "QMessageBox"
 
 RegisterGui::RegisterGui(QWidget *parent)
 	: QDialog(parent), nameLineEdit(new QLineEdit(this)), passwordLineEdit(new QLineEdit(this))
 {
+	//界面基本设置
 	setAttribute(Qt::WA_QuitOnClose, false);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setWindowFlags(Qt::WindowCloseButtonHint);
 
+	//设置标题和大小
 	setWindowTitle(tr(u8"注册"));
 	setFixedSize(600, 300);
 
+	//移动到屏幕中央
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
@@ -58,13 +66,15 @@ RegisterGui::~RegisterGui()
 
 void RegisterGui::registerButtonClicked()
 {
+	//如果注册昵称或密码为空
 	if (nameLineEdit->text() == "" || passwordLineEdit->text() == "")
 	{
 		QMessageBox::warning(this, tr(u8"警告"), tr(u8"昵称或密码不可为空！"));
 	}
 	else
 	{
-		emit registerSignal(nameLineEdit->text() + ' ' + passwordLineEdit->text());
+		//否则发送注册信息
+		emit registerRequestSignal(nameLineEdit->text() + ' ' + passwordLineEdit->text());
 	}
 }
 

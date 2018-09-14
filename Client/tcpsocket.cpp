@@ -1,4 +1,5 @@
 #include "tcpsocket.h"
+#include "QDataStream"
 
 TcpSocket::TcpSocket(QObject *parent)
 	: QTcpSocket(parent), buffer(QByteArray()), headLen(sizeof(qint32)), msgLen(0)
@@ -57,8 +58,10 @@ void TcpSocket::getMsg()
 		{
 			if (totalLen >= headLen + msgLen)
 			{
+				//预先读出头
 				int temp = 0;
 				in >> temp;
+				//读包身消息
 				QString msg;
 				in >> msg;
 				emit getMsgSignal(msg);

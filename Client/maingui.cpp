@@ -1,14 +1,22 @@
 #include "maingui.h"
+#include "QApplication"
+#include "QDeskTopWidget"
+#include "QMenuBar"
+#include "QGridLayout"
 
 MainGui::MainGui(QWidget *parent)
 	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({})
 {
+	//界面基本设置
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setAttribute(Qt::WA_QuitOnClose, true);
 
-	setWindowTitle(myInfo.name);
+	//设置界面标题名和大小
+	setWindowTitle(myInfo.id + "-" + myInfo.name);
 	resize(1300, 800);
+	setMinimumSize(size());
 
+	//把界面放在屏幕中间
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
@@ -54,6 +62,7 @@ MainGui::~MainGui()
 
 void MainGui::resizeEvent(QResizeEvent * event)
 {
+	//挨个在聊天界面列表中把每个聊天界面都改变大小
 	for (ChatFrame *c : chatFramePool)
 	{
 		c->resize(framePlace->size());
@@ -63,33 +72,44 @@ void MainGui::resizeEvent(QResizeEvent * event)
 
 void MainGui::friendListItemDoubleClicked(QListWidgetItem *item)
 {
+	//遍历聊天界面列表，看这个好友的聊天界面是否打开
 	for (ChatFrame *c : chatFramePool)
 	{
+		//如果打开了
 		if (c->getID() == item->data(Qt::UserRole + FriendInfoNum::id).toString())
 		{
+			//放到最顶层
 			c->raise();
-			setWindowTitle(tr(myInfo.name.toUtf8() + u8"-" + c->getName().toUtf8()));
+			//重置主界面标题
+			setWindowTitle(windowTitle().split("---")[0] + "---" + c->getID() + "-" + c->getName());
+			//结束
 			return;
 		}
 	}
+
+	//没有结束的话，那肯定是没有打开，则打开
 	ChatFrame *chatFrame = new ChatFrame(framePlace, UserInfo(item->data(Qt::UserRole + FriendInfoNum::id).toString(), item->data(Qt::UserRole + FriendInfoNum::name).toString()));
-	setWindowTitle(tr(myInfo.name.toUtf8() + u8"-" + item->data(Qt::UserRole + FriendInfoNum::name).toString().toUtf8()));
+	setWindowTitle(windowTitle().split("---")[0] + "---" + item->data(Qt::UserRole + FriendInfoNum::id).toString() + "-" + item->data(Qt::UserRole + FriendInfoNum::name).toString());
 	chatFrame->resize(framePlace->size());
-	connect(chatFrame, &ChatFrame::sendMsgSignal, this, &MainGui::sendMsgSignal);
-	connect(this, &MainGui::getMsgSignal, chatFrame, &ChatFrame::getMsgSlot);
-	chatFramePool.push_back(chatFrame);
+	connect(chatFrame, &ChatFrame::sendMsgSignal, this, &MainGui::sendMsgSignal); //发送聊天消息
+	connect(this, &MainGui::getMsgSignal, chatFrame, &ChatFrame::getMsgSlot); //接收聊天消息
+	chatFramePool.push_back(chatFrame); //加入聊天界面列表
 	chatFrame->show();
 }
 
 void MainGui::getMyInfoSlot(QString id, QString name)
 {
+	//更新自己的用户信息
 	myInfo.id = id;
 	myInfo.name = name;
-	setWindowTitle(name);
+	//重置主界面标题
+	setWindowTitle(myInfo.id + "-" + myInfo.name);
 }
 
 void MainGui::updateFriendList(QStringList friendList)
 {
+	//先清空原来的好友列表，防止出现重复好友项
+	this->friendList->clear();
 	for (QString s : friendList)
 	{
 		QStringList sList = s.split('_');
@@ -103,6 +123,7 @@ void MainGui::updateFriendList(QStringList friendList)
 
 void MainGui::getMsgSlot(QString msg, QString senderID)
 {
+	//在好友列表中找到相应的发送方，模拟双击该项，这样无论这个好友的聊天界面是否打开最终都会打开
 	for (int i = 0; i < friendList->count(); i++)
 	{
 		if (friendList->item(i)->data(Qt::UserRole + FriendInfoNum::id).toString() == senderID)

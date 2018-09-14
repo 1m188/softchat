@@ -56,22 +56,22 @@ void Server::getMsgFromClientSlot(QString msg)
 
 	//判定
 	//登陆请求
-	if (msgList[0] == "login")
+	if (msgList[0] == "LoginRequest")
 	{
 		loginRequestHandle(sender, msgList);
 	}
 	//注册请求
-	else if (msgList[0] == "register")
+	else if (msgList[0] == "RegisterRequest")
 	{
 		registerRequestHandle(sender, msgList);
 	}
 	//自己的用户信息请求
-	else if (msgList[0] == "myInfo")
+	else if (msgList[0] == "MyInfoRequest")
 	{
 		myInfoRequestHandle(sender, msgList);
 	}
 	//好友列表请求
-	else if (msgList[0] == "friendList")
+	else if (msgList[0] == "FriendListRequest")
 	{
 		friendListRequestHandle(sender, msgList);
 	}
@@ -93,7 +93,7 @@ void Server::loginRequestHandle(ClientThread * sender, QStringList msgList)
 	{
 		if (c->getID() == id)
 		{
-			emit sender->sendMsgToClientSignal("loginRepeat"); //重复登陆
+			emit sender->sendMsgToClientSignal("LoginRepeat"); //重复登陆
 			return;
 		}
 	}
@@ -102,12 +102,12 @@ void Server::loginRequestHandle(ClientThread * sender, QStringList msgList)
 	query.exec(QString("select * from acount where id='%1' and password='%2'").arg(id).arg(password));
 	if (query.next())
 	{
-		emit sender->sendMsgToClientSignal("loginSuccess"); //登陆成功
+		emit sender->sendMsgToClientSignal("LoginSuccess"); //登陆成功
 		sender->setID(id);
 	}
 	else
 	{
-		emit sender->sendMsgToClientSignal("loginFailed"); //登陆失败
+		emit sender->sendMsgToClientSignal("LoginFailed"); //登陆失败
 	}
 }
 
@@ -122,7 +122,7 @@ void Server::registerRequestHandle(ClientThread * sender, QStringList msgList)
 
 	query.exec(QString("insert into acount values('%1','%2','%3')").arg(id).arg(name).arg(password)); //插入用户相关信息到用户表中
 	query.exec(QString("create table friend%1(friendid char(10) not null);").arg(id)); //建立一个用户的好友表
-	emit sender->sendMsgToClientSignal(QString("registerSuccess") + ' ' + id); //注册成功
+	emit sender->sendMsgToClientSignal(QString("RegisterSuccess") + ' ' + id); //注册成功
 }
 
 void Server::myInfoRequestHandle(ClientThread * sender, QStringList msgList)
@@ -131,7 +131,7 @@ void Server::myInfoRequestHandle(ClientThread * sender, QStringList msgList)
 	QString id = sender->getID();
 	query.exec(QString("select name from acount where id='%1';").arg(id)); //查询自己id对应的id和昵称作为自己的用户信息返回
 	//整理发送的返回消息
-	QString myInfo = "myInfo";
+	QString myInfo = "MyInfo";
 	myInfo += ' ';
 	myInfo += id;
 	myInfo += ' ';
@@ -148,7 +148,7 @@ void Server::friendListRequestHandle(ClientThread * sender, QStringList msgList)
 	QString id = sender->getID(); //获取发送方id
 	query.exec(QString("select id,name from acount,friend%1 where acount.id=friend%2.friendid;").arg(id).arg(id)); //查询相应id的好友表中的所有的好友的id和昵称
 	//整理发送返回的消息
-	QString friendList = "friendList";
+	QString friendList = "FriendList";
 	while (query.next())
 	{
 		friendList += ' ';
@@ -167,12 +167,14 @@ void Server::messageHandle(ClientThread * sender, QStringList msgList)
 	//在连接上的客户端池中查找接收方
 	for (ClientThread *c : threadPool)
 	{
+		//如果在的话
 		if (c->getID() == recvID)
 		{
+			//原封不动发送消息
 			emit c->sendMsgToClientSignal(msgList.join(' '));
 			return;
 		}
 	}
-	//如果没有上线的话就发送
-	emit sender->sendMsgToClientSignal(u8"该用户目前没有上线，你的消息可能无法到达！");
+	//如果没有上线的话就向发送方发送相关提示信息
+	emit sender->sendMsgToClientSignal(QString("Message %1 %2 %3").arg(recvID).arg(msgList[1]).arg(tr(u8"该用户目前没有上线，你的消息可能无法到达！")));
 }

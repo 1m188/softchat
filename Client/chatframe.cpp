@@ -1,12 +1,15 @@
 #include "chatframe.h"
 #include "QPushButton"
 #include "QGridLayout"
+#include "QEvent"
+#include "QKeyEvent"
 
 ChatFrame::ChatFrame(QWidget *parent, UserInfo friendInfo)
 	: QFrame(parent), friendInfo(friendInfo), sendTextEdit(new QTextEdit(this)), recvTextEdit(new QTextEdit(this))
 {
 	//控件
-	recvTextEdit->setReadOnly(true);
+	recvTextEdit->setReadOnly(true); //将接收消息文本框设置为只读
+	sendTextEdit->installEventFilter(this); //安装事件过滤器，以实现回车键发送消息，其他键+回车键换行的功能
 
 	QPushButton *sendButton = new QPushButton(this);
 	sendButton->setDefault(true);
@@ -25,6 +28,45 @@ ChatFrame::ChatFrame(QWidget *parent, UserInfo friendInfo)
 ChatFrame::~ChatFrame()
 {
 
+}
+
+bool ChatFrame::eventFilter(QObject * watched, QEvent * event)
+{
+	//如果当前焦点聚焦到发送文本框
+	if (watched == sendTextEdit)
+	{
+		//如果事件为按键
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *key = static_cast<QKeyEvent *>(event);
+			//如果按下的是回车键且没有任何修饰键
+			if (key->modifiers() == Qt::KeyboardModifier::NoModifier && key->key() == Qt::Key_Return)
+			{
+				//则触发发送消息
+				sendButtonClicked();
+				return true;
+			}
+			//否则如果按下的键是回车
+			else if (key->key() == Qt::Key_Return)
+			{
+				key->setModifiers(Qt::KeyboardModifier::NoModifier); //取消修饰键，以让发送文本框执行换行操作
+				return false;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	//否则交给父类的相关函数实现
+	else
+	{
+		return QWidget::eventFilter(watched, event);
+	}
 }
 
 void ChatFrame::sendButtonClicked()

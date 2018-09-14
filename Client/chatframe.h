@@ -23,6 +23,9 @@ public:
 	const QString getID() const { return friendInfo.id; } //获取该好友id
 	const QString getName() const { return friendInfo.name; } //获取该好友昵称
 
+protected:
+	bool eventFilter(QObject *watched, QEvent *event) override; //事件过滤器
+
 signals:
 	void sendMsgSignal(QString msg, QString recverID); //发送聊天消息
 

@@ -80,6 +80,11 @@ void Server::getMsgFromClientSlot(QString msg)
 	{
 		messageHandle(sender, msgList);
 	}
+	//添加好友请求
+	else if (msgList[0] == "AddFriendRequest")
+	{
+		addFriendRequestHandle(sender, msgList);
+	}
 }
 
 void Server::loginRequestHandle(ClientThread * sender, QStringList msgList)
@@ -177,4 +182,37 @@ void Server::messageHandle(ClientThread * sender, QStringList msgList)
 	}
 	//如果没有上线的话就向发送方发送相关提示信息
 	emit sender->sendMsgToClientSignal(QString("Message %1 %2 %3").arg(recvID).arg(msgList[1]).arg(tr(u8"该用户目前没有上线，你的消息可能无法到达！")));
+}
+
+void Server::addFriendRequestHandle(ClientThread * sender, QStringList msgList)
+{
+	//获取被请求添加方id
+	QString friendID = msgList[1];
+
+	//验证是否有这个用户
+	query.exec(QString("select id from acount where id='%1';").arg(friendID));
+	//如果没有这个用户的话
+	if (!query.next())
+	{
+		emit sender->sendMsgToClientSignal(QString("NoThisUser"));
+	}
+	else
+	{
+		//否则给双方添加好友
+		query.exec(QString("insert into friend%1 values('%2');").arg(sender->getID()).arg(friendID));
+		query.exec(QString("insert into friend%1 values('%2');").arg(friendID).arg(sender->getID()));
+
+		//给发送方更新好友列表
+		friendListRequestHandle(sender, QString("FriendListRequest").split(' '));
+
+		//如果被添加方也在线的话，则也给被添加方更新好友列表
+		for (int i = 0; i < threadPool.count(); i++)
+		{
+			if (threadPool[i]->getID() == friendID)
+			{
+				friendListRequestHandle(threadPool[i], QString("FriendListRequest").split(' '));
+				break;
+			}
+		}
+	}
 }

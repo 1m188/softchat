@@ -50,6 +50,8 @@ void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
 	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot); //获取自己的用户信息
 	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList); //获取好友列表并且更新好友列表
 	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot); //接收到聊天信息
+	connect(mainGui, &MainGui::addFriendSignal, this, &Data::addFriendSlot); //发送添加好友请求
+	connect(this, &Data::noThisUserSignal, mainGui, &MainGui::noThisUserSignal); //添加好友时返回没有这个用户
 
 	connectToServer->writeMsg("MyInfoRequest"); //发送自己用户信息请求
 	connectToServer->writeMsg("FriendListRequest"); //发送好友列表请求
@@ -99,6 +101,11 @@ void Data::getMsgFromServer(QString msg)
 	else if (msgList[0] == "Message")
 	{
 		messageHandle(msgList);
+	}
+	//添加好友，没有这个用户的回应
+	else if (msgList[0] == "NoThisUser")
+	{
+		noThisUserHandle(msgList);
 	}
 }
 
@@ -151,6 +158,11 @@ void Data::messageHandle(QStringList msgList)
 	emit getMsgSignal(msg, senderID);
 }
 
+void Data::noThisUserHandle(QStringList msgList)
+{
+	emit noThisUserSignal();
+}
+
 
 
 void Data::loginRequestSlot(QString acountInfo)
@@ -168,4 +180,9 @@ void Data::registerRequestSlot(QString acountInfo)
 void Data::sendMsgSlot(QString msg, QString recverID)
 {
 	connectToServer->writeMsg(QString("Message %1 %2 %3").arg(myInfo->id).arg(recverID).arg(msg));
+}
+
+void Data::addFriendSlot(QString friendID)
+{
+	connectToServer->writeMsg(QString("AddFriendRequest %1").arg(friendID));
 }

@@ -42,6 +42,9 @@
     <Filter Include="socket">
       <UniqueIdentifier>{cad4aa6c-561e-4dc4-b2e8-73c960f7a198}</UniqueIdentifier>
     </Filter>
+    <Filter Include="界面\添加好友界面">
+      <UniqueIdentifier>{bcfff16e-329f-416d-a9a1-1fe25d286d20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_client.cpp">
@@ -102,6 +105,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_tcpsocket.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_addfriendgui.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_addfriendgui.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="addfriendgui.cpp">
+      <Filter>界面\添加好友界面</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="client.qrc">
@@ -124,6 +136,9 @@
     </CustomBuild>
     <CustomBuild Include="tcpsocket.h">
       <Filter>socket</Filter>
+    </CustomBuild>
+    <CustomBuild Include="addfriendgui.h">
+      <Filter>界面\添加好友界面</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

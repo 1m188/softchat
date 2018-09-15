@@ -31,6 +31,7 @@ private:
 	void getMyInfoHandle(QStringList msgList); //获取自己的用户信息的响应
 	void getFriendListHandle(QStringList msgList); //获取好友列表的响应
 	void messageHandle(QStringList msgList); //接收好友发送过来的聊天消息的响应
+	void noThisUserHandle(QStringList msgList); //添加好友时返回没有这个用户
 
 public:
 	//对外的用来做登陆界面和主界面的信号及信号槽的连接的接口
@@ -51,6 +52,8 @@ signals:
 	void getFriendListSignal(QStringList friendList); //获取好友列表
 	void getMsgSignal(QString msg, QString senderID); //接收聊天消息
 
+	void noThisUserSignal(); //添加好友时返回没有这个用户
+
 	private slots:
 	//用来在另一个线程中响应添加信号及信号槽连接的信号槽
 	void addSignalSlotsForClassSlot(LoginGui *loginGui);
@@ -63,6 +66,8 @@ signals:
 	void registerRequestSlot(QString acountInfo); //发送注册请求
 
 	void sendMsgSlot(QString msg, QString recverID); //发送聊天消息
+
+	void addFriendSlot(QString friendID); //发送添加好友请求
 };
 
 #endif // DATA_H

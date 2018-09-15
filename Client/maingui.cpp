@@ -3,9 +3,10 @@
 #include "QDeskTopWidget"
 #include "QMenuBar"
 #include "QGridLayout"
+#include "addfriendgui.h"
 
 MainGui::MainGui(QWidget *parent)
-	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({})
+	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({}), isAddFriendGuiOpen(false)
 {
 	//界面基本设置
 	setAttribute(Qt::WA_DeleteOnClose, true);
@@ -137,6 +138,33 @@ void MainGui::getMsgSlot(QString msg, QString senderID)
 
 void MainGui::addFriendActionTriggered()
 {
+	//使添加好友界面出现但是其他的界面依旧可以操作，且添加好友界面只出现一个
+	if (!isAddFriendGuiOpen)
+	{
+		AddFriendGui *addFriendGui = new AddFriendGui(nullptr, myInfo);
+		isAddFriendGuiOpen = true;
+		connect(addFriendGui, &AddFriendGui::closeSignal, this, [&]() {isAddFriendGuiOpen = false; }); //添加好友界面唯一
+		connect(addFriendGui, &AddFriendGui::addFriendSignal, this, &MainGui::addFriendSlot); //添加好友
+		connect(this, &MainGui::addFriendRepeatSignal, addFriendGui, &AddFriendGui::addFriendRepeatSlot); //已经添加了这个好友
+		connect(this, &MainGui::noThisUserSignal, addFriendGui, &AddFriendGui::noThisUserSlot); //添加好友的时候返回没有这个用户
+		addFriendGui->show();
+	}
+}
+
+void MainGui::addFriendSlot(QString friendID)
+{
+	//如果好友列表里有这个申请的id，驳回请求，结束
+	for (int i = 0; i < friendList->count(); i++)
+	{
+		if (friendID == friendList->item(i)->data(Qt::UserRole + FriendInfoNum::id).toString())
+		{
+			emit addFriendRepeatSignal();
+			return;
+		}
+	}
+
+	//否则，发送好友添加请求
+	emit addFriendSignal(friendID);
 }
 
 void MainGui::delFriendActionTriggered()

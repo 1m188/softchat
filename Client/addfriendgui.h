@@ -23,7 +23,7 @@ protected:
 
 signals:
 	void closeSignal(); //自身关闭的时候发出信号
-	void addFriendSignal(QString friendID); //添加好友信号
+	void addFriendRequestSignal(QString friendID); //添加好友信号
 
 	private slots:
 	void addButtonClicked(); //添加好友按钮按下

@@ -85,6 +85,11 @@ void Server::getMsgFromClientSlot(QString msg)
 	{
 		addFriendRequestHandle(sender, msgList);
 	}
+	//删除好友请求
+	else if (msgList[0] == "DelFriendRequest")
+	{
+		delFriendRequestHandle(sender, msgList);
+	}
 }
 
 void Server::loginRequestHandle(ClientThread * sender, QStringList msgList)
@@ -213,6 +218,26 @@ void Server::addFriendRequestHandle(ClientThread * sender, QStringList msgList)
 				friendListRequestHandle(threadPool[i], QString("FriendListRequest").split(' '));
 				break;
 			}
+		}
+	}
+}
+
+void Server::delFriendRequestHandle(ClientThread * sender, QStringList msgList)
+{
+	//获取要被删除的好友id
+	QString friendID = msgList[1];
+
+	//给请求方和被请求方互相删除
+	query.exec(QString("delete from friend%1 where friendid='%2';").arg(sender->getID()).arg(friendID));
+	query.exec(QString("delete from friend%1 where friendid='%2';").arg(friendID).arg(sender->getID()));
+
+	//如果被请求方在线的话，给被请求方更新好友列表
+	for (int i = 0; i < threadPool.count(); i++)
+	{
+		if (threadPool[i]->getID() == friendID)
+		{
+			friendListRequestHandle(threadPool[i], QString("FriendListRequest").split(' '));
+			break;
 		}
 	}
 }

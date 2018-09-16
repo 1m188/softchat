@@ -4,6 +4,7 @@
 #include "QMenuBar"
 #include "QGridLayout"
 #include "addfriendgui.h"
+#include "QMessageBox"
 
 MainGui::MainGui(QWidget *parent)
 	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({}), isAddFriendGuiOpen(false)
@@ -110,7 +111,13 @@ void MainGui::getMyInfoSlot(QString id, QString name)
 void MainGui::updateFriendList(QStringList friendList)
 {
 	//先清空原来的好友列表，防止出现重复好友项
+	for (int i = 0; i < this->friendList->count(); i++)
+	{
+		delete this->friendList->item(i);
+	}
 	this->friendList->clear();
+
+	//挨个添加
 	for (QString s : friendList)
 	{
 		QStringList sList = s.split('_');
@@ -119,6 +126,26 @@ void MainGui::updateFriendList(QStringList friendList)
 		item->setData(Qt::UserRole + FriendInfoNum::id, sList[0]);
 		item->setData(Qt::UserRole + FriendInfoNum::name, sList[1]);
 		this->friendList->addItem(item);
+	}
+
+	//如果是被删除好友的一方，被更新好友列表，则要把相关的界面删除
+	for (int i = 0; i < chatFramePool.count(); i++)
+	{
+	begin:
+		//检测打开的聊天面板的id是否存在好友列表中
+		for (int j = 0; j < this->friendList->count(); j++)
+		{
+			if (this->friendList->item(j)->data(Qt::UserRole + FriendInfoNum::id).toString() == chatFramePool[i]->getID())
+			{
+				//如果存在则返回到begin处
+				i++;
+				goto begin;
+			}
+		}
+		//不然的话就关闭并删除这个面板
+		chatFramePool[i]->close();
+		chatFramePool[i]->deleteLater();
+		chatFramePool.removeAt(i);
 	}
 }
 
@@ -144,14 +171,14 @@ void MainGui::addFriendActionTriggered()
 		AddFriendGui *addFriendGui = new AddFriendGui(nullptr, myInfo);
 		isAddFriendGuiOpen = true;
 		connect(addFriendGui, &AddFriendGui::closeSignal, this, [&]() {isAddFriendGuiOpen = false; }); //添加好友界面唯一
-		connect(addFriendGui, &AddFriendGui::addFriendSignal, this, &MainGui::addFriendSlot); //添加好友
+		connect(addFriendGui, &AddFriendGui::addFriendRequestSignal, this, &MainGui::addFriendRequestSlot); //添加好友
 		connect(this, &MainGui::addFriendRepeatSignal, addFriendGui, &AddFriendGui::addFriendRepeatSlot); //已经添加了这个好友
 		connect(this, &MainGui::noThisUserSignal, addFriendGui, &AddFriendGui::noThisUserSlot); //添加好友的时候返回没有这个用户
 		addFriendGui->show();
 	}
 }
 
-void MainGui::addFriendSlot(QString friendID)
+void MainGui::addFriendRequestSlot(QString friendID)
 {
 	//如果好友列表里有这个申请的id，驳回请求，结束
 	for (int i = 0; i < friendList->count(); i++)
@@ -164,11 +191,37 @@ void MainGui::addFriendSlot(QString friendID)
 	}
 
 	//否则，发送好友添加请求
-	emit addFriendSignal(friendID);
+	emit addFriendRequestSignal(friendID);
 }
 
 void MainGui::delFriendActionTriggered()
 {
+	//获取当前选中项（默认第一项）
+	QList<QListWidgetItem *> items = friendList->selectedItems();
+	//如果有
+	if (items.count())
+	{
+		//判断是否要删除好友
+		if (QMessageBox::warning(this, tr(u8"警告"), tr((QString(u8"你真的要删除你的好友 %1 吗？").arg(items[0]->data(Qt::UserRole + FriendInfoNum::name).toString()).toUtf8())), QMessageBox::Yes | QMessageBox::Cancel) == QMessageBox::Yes)
+		{
+			//是则发送删除好友请求
+			emit delFriendRequestSignal(items[0]->data(Qt::UserRole + FriendInfoNum::id).toString());
+			//如果聊天面板打开了的话就要关闭
+			for (int i = 0; i < chatFramePool.count(); i++)
+			{
+				if (chatFramePool[i]->getID() == items[0]->data(Qt::UserRole + FriendInfoNum::id).toString())
+				{
+					chatFramePool[i]->close();
+					chatFramePool[i]->deleteLater();
+					chatFramePool.removeAt(i);
+					break;
+				}
+			}
+			//并且删除好友列表里的项
+			friendList->removeItemWidget(items[0]);
+			delete items[0];
+		}
+	}
 }
 
 void MainGui::videoActionTriggered()

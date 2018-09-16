@@ -29,13 +29,14 @@ signals:
 	void sendMsgSignal(QString msg, QString recverID); //发送聊天消息
 	void getMsgSignal(QString msg, QString senderID); //获取聊天消息
 	void addFriendRepeatSignal(); //已经添加了这个好友
-	void addFriendSignal(QString friendID); //添加好友
+	void addFriendRequestSignal(QString friendID); //添加好友
 	void noThisUserSignal(); //添加好友时返回没有这个用户
+	void delFriendRequestSignal(QString friendID); //删除好友
 
 	private slots:
 	void friendListItemDoubleClicked(QListWidgetItem *item); //双击好友列表中的某一项，显示相关的聊天界面
 	void addFriendActionTriggered(); //添加好友
-	void addFriendSlot(QString friendID); //响应添加好友界面的添加好友信号
+	void addFriendRequestSlot(QString friendID); //响应添加好友界面的添加好友信号
 	void delFriendActionTriggered(); //删除好友
 	void videoActionTriggered(); //视频聊天
 

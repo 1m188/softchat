@@ -25,6 +25,7 @@ private:
 	void friendListRequestHandle(ClientThread *sender, QStringList msgList); //好友列表请求处理函数
 	void messageHandle(ClientThread *sender, QStringList msgList); //发送聊天消息处理函数
 	void addFriendRequestHandle(ClientThread *sender, QStringList msgList); //添加好友请求处理函数
+	void delFriendRequestHandle(ClientThread *sender, QStringList msgList); //删除好友请求处理函数
 
 protected:
 	void incomingConnection(qintptr handle) override; //重写连接到来的时候处理

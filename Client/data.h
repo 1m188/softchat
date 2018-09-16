@@ -67,7 +67,8 @@ signals:
 
 	void sendMsgSlot(QString msg, QString recverID); //发送聊天消息
 
-	void addFriendSlot(QString friendID); //发送添加好友请求
+	void addFriendRequestSlot(QString friendID); //发送添加好友请求
+	void delFriendRequestSlot(QString friendID); //发送删除好友请求
 };
 
 #endif // DATA_H

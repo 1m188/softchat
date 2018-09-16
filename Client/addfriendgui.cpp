@@ -78,7 +78,7 @@ void AddFriendGui::addButtonClicked()
 	else
 	{
 		//否则发送添加好友信号
-		emit addFriendSignal(friendID);
+		emit addFriendRequestSignal(friendID);
 	}
 }
 

@@ -131,21 +131,27 @@ void MainGui::updateFriendList(QStringList friendList)
 	//如果是被删除好友的一方，被更新好友列表，则要把相关的界面删除
 	for (int i = 0; i < chatFramePool.count(); i++)
 	{
-	begin:
+		bool isExist = false; //打开的聊天面板的id是否在好友列表中
+
 		//检测打开的聊天面板的id是否存在好友列表中
 		for (int j = 0; j < this->friendList->count(); j++)
 		{
 			if (this->friendList->item(j)->data(Qt::UserRole + FriendInfoNum::id).toString() == chatFramePool[i]->getID())
 			{
-				//如果存在则返回到begin处
-				i++;
-				goto begin;
+				//如果存在
+				isExist = true;
+				break;
 			}
 		}
-		//不然的话就关闭并删除这个面板
-		chatFramePool[i]->close();
-		chatFramePool[i]->deleteLater();
-		chatFramePool.removeAt(i);
+
+		//如果不在
+		if (!isExist)
+		{
+			//不然的话就关闭并删除这个面板
+			chatFramePool[i]->close();
+			chatFramePool[i]->deleteLater();
+			chatFramePool.removeAt(i);
+		}
 	}
 }
 
@@ -196,7 +202,7 @@ void MainGui::addFriendRequestSlot(QString friendID)
 
 void MainGui::delFriendActionTriggered()
 {
-	//获取当前选中项（默认第一项）
+	//获取当前选中项
 	QList<QListWidgetItem *> items = friendList->selectedItems();
 	//如果有
 	if (items.count())

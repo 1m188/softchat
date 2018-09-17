@@ -38,7 +38,6 @@ signals:
 	void addFriendActionTriggered(); //添加好友
 	void addFriendRequestSlot(QString friendID); //响应添加好友界面的添加好友信号
 	void delFriendActionTriggered(); //删除好友
-	void videoActionTriggered(); //视频聊天
 
 	public slots:
 	void getMyInfoSlot(QString id, QString name); //获取自己的用户信息

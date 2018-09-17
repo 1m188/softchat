@@ -40,15 +40,10 @@ MainGui::MainGui(QWidget *parent)
 	connect(addFriendAction, &QAction::triggered, this, &MainGui::addFriendActionTriggered);
 	menu->addAction(addFriendAction);
 
-	QAction * delFriendAction = new QAction(menu);
+	QAction *delFriendAction = new QAction(menu);
 	delFriendAction->setText(tr(u8"删除好友"));
 	connect(delFriendAction, &QAction::triggered, this, &MainGui::delFriendActionTriggered);
 	menu->addAction(delFriendAction);
-
-	QAction *videoAction = new QAction(menu);
-	videoAction->setText(tr(u8"视频通话"));
-	connect(videoAction, &QAction::triggered, this, &MainGui::videoActionTriggered);
-	menu->addAction(videoAction);
 
 	//布局
 	QGridLayout *layout = new QGridLayout(this);
@@ -228,8 +223,4 @@ void MainGui::delFriendActionTriggered()
 			delete items[0];
 		}
 	}
-}
-
-void MainGui::videoActionTriggered()
-{
 }

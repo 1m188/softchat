@@ -14,7 +14,7 @@ Server::Server(QObject *parent)
 
 	//开始监听本地ip，8888端口
 	listen(QHostAddress::Any, 8888);
-	qDebug() << u8"开始监听本地IP，8888端口...";
+	qDebug() << "start listen at localhost with port 8888...";
 }
 
 Server::~Server()

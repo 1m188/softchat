@@ -1,109 +1,109 @@
-#include "data.h"
+ï»¿#include "data.h"
 #include "QThread"
 
 Data::Data(QObject *parent)
 	: QObject(parent), connectToServer(nullptr), myInfo(nullptr)
 {
-	//°Ñ±¾ÀàµÄËùÓĞĞÅºÅ²ÛÏìÓ¦·ÅÔÚÁíÒ»¸öÏß³ÌÖĞ
+	//æŠŠæœ¬ç±»çš„æ‰€æœ‰ä¿¡å·æ§½å“åº”æ”¾åœ¨å¦ä¸€ä¸ªçº¿ç¨‹ä¸­
 	QThread *thread = new QThread();
 	moveToThread(thread);
-	connect(thread, &QThread::started, this, &Data::init); //Ïß³Ì¿ªÊ¼ÔòÆô¶¯³õÊ¼»¯
-	//×ÊÔ´¹ÜÀí
+	connect(thread, &QThread::started, this, &Data::init); //çº¿ç¨‹å¼€å§‹åˆ™å¯åŠ¨åˆå§‹åŒ–
+	//èµ„æºç®¡ç†
 	connect(this, &Data::destroyed, thread, &QThread::quit);
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-	thread->start(); //Æô¶¯
+	thread->start(); //å¯åŠ¨
 }
 
 Data::~Data()
 {
-	//ÊÍ·ÅÏà¹ØÄÚ´æ×ÊÔ´
+	//é‡Šæ”¾ç›¸å…³å†…å­˜èµ„æº
 	delete myInfo;
 }
 
 void Data::init()
 {
-	//¸øÍâ²¿ÓÃÀ´µ÷ÓÃµÄ½Ó¿ÚÖĞ·¢ËÍµÄĞÅºÅºÍÏà¹ØĞÅºÅ²ÛµÄÁ¬½Ó
+	//ç»™å¤–éƒ¨ç”¨æ¥è°ƒç”¨çš„æ¥å£ä¸­å‘é€çš„ä¿¡å·å’Œç›¸å…³ä¿¡å·æ§½çš„è¿æ¥
 	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
 	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
 
-	connectToServer = new TcpSocket(nullptr); //³õÊ¼»¯ºÍ·şÎñÆ÷Á¬½ÓµÄsocket
-	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater); //×ÊÔ´¹ÜÀí
-	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer); //´Ó·şÎñÆ÷»ñÈ¡µÄÏûÏ¢´¦Àí
-	connectToServer->connectToHost("127.0.0.1", 8888); //Á¬½Óµ½Ïà¹Ø·şÎñÆ÷£¨±¾µØ£©µÄ8888¶Ë¿Ú
+	connectToServer = new TcpSocket(nullptr); //åˆå§‹åŒ–å’ŒæœåŠ¡å™¨è¿æ¥çš„socket
+	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater); //èµ„æºç®¡ç†
+	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer); //ä»æœåŠ¡å™¨è·å–çš„æ¶ˆæ¯å¤„ç†
+	connectToServer->connectToHost("127.0.0.1", 8888); //è¿æ¥åˆ°ç›¸å…³æœåŠ¡å™¨ï¼ˆæœ¬åœ°ï¼‰çš„8888ç«¯å£
 
-	myInfo = new UserInfo(); //³õÊ¼»¯×Ô¼ºµÄÓÃ»§ĞÅÏ¢
+	myInfo = new UserInfo(); //åˆå§‹åŒ–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
 }
 
 void Data::addSignalSlotsForClassSlot(LoginGui *loginGui)
 {
-	connect(loginGui, &LoginGui::loginRequestSignal, this, &Data::loginRequestSlot); //µÇÂ½ÇëÇó
-	connect(loginGui, &LoginGui::registerRequestSignal, this, &Data::registerRequestSlot); //×¢²áÇëÇó
-	connect(this, &Data::loginSignal, loginGui, &LoginGui::accept); //Ê¹Ö®µÇÂ½
-	connect(this, &Data::loginFailedSignal, loginGui, &LoginGui::loginFailedSlot); //µÇÂ½Ê§°Ü
-	connect(this, &Data::loginRepeatSignal, loginGui, &LoginGui::loginRepeatSlot); //ÖØ¸´µÇÂ½
-	connect(this, &Data::registerSuccessSignal, loginGui, &LoginGui::registerSuccessSignal); //×¢²á³É¹¦
+	connect(loginGui, &LoginGui::loginRequestSignal, this, &Data::loginRequestSlot); //ç™»é™†è¯·æ±‚
+	connect(loginGui, &LoginGui::registerRequestSignal, this, &Data::registerRequestSlot); //æ³¨å†Œè¯·æ±‚
+	connect(this, &Data::loginSignal, loginGui, &LoginGui::accept); //ä½¿ä¹‹ç™»é™†
+	connect(this, &Data::loginFailedSignal, loginGui, &LoginGui::loginFailedSlot); //ç™»é™†å¤±è´¥
+	connect(this, &Data::loginRepeatSignal, loginGui, &LoginGui::loginRepeatSlot); //é‡å¤ç™»é™†
+	connect(this, &Data::registerSuccessSignal, loginGui, &LoginGui::registerSuccessSignal); //æ³¨å†ŒæˆåŠŸ
 }
 
 void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
 {
-	connect(mainGui, &MainGui::sendMsgSignal, this, &Data::sendMsgSlot); //·¢ËÍÁÄÌìÏûÏ¢
-	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot); //»ñÈ¡×Ô¼ºµÄÓÃ»§ĞÅÏ¢
-	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList); //»ñÈ¡ºÃÓÑÁĞ±í²¢ÇÒ¸üĞÂºÃÓÑÁĞ±í
-	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot); //½ÓÊÕµ½ÁÄÌìĞÅÏ¢
-	connect(mainGui, &MainGui::addFriendRequestSignal, this, &Data::addFriendRequestSlot); //·¢ËÍÌí¼ÓºÃÓÑÇëÇó
-	connect(this, &Data::noThisUserSignal, mainGui, &MainGui::noThisUserSignal); //Ìí¼ÓºÃÓÑÊ±·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
-	connect(mainGui, &MainGui::delFriendRequestSignal, this, &Data::delFriendRequestSlot); //·¢ËÍÉ¾³ıºÃÓÑÇëÇó
+	connect(mainGui, &MainGui::sendMsgSignal, this, &Data::sendMsgSlot); //å‘é€èŠå¤©æ¶ˆæ¯
+	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList); //è·å–å¥½å‹åˆ—è¡¨å¹¶ä¸”æ›´æ–°å¥½å‹åˆ—è¡¨
+	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot); //æ¥æ”¶åˆ°èŠå¤©ä¿¡æ¯
+	connect(mainGui, &MainGui::addFriendRequestSignal, this, &Data::addFriendRequestSlot); //å‘é€æ·»åŠ å¥½å‹è¯·æ±‚
+	connect(this, &Data::noThisUserSignal, mainGui, &MainGui::noThisUserSignal); //æ·»åŠ å¥½å‹æ—¶è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
+	connect(mainGui, &MainGui::delFriendRequestSignal, this, &Data::delFriendRequestSlot); //å‘é€åˆ é™¤å¥½å‹è¯·æ±‚
 
-	connectToServer->writeMsg("MyInfoRequest"); //·¢ËÍ×Ô¼ºÓÃ»§ĞÅÏ¢ÇëÇó
-	connectToServer->writeMsg("FriendListRequest"); //·¢ËÍºÃÓÑÁĞ±íÇëÇó
+	connectToServer->writeMsg("MyInfoRequest"); //å‘é€è‡ªå·±ç”¨æˆ·ä¿¡æ¯è¯·æ±‚
+	connectToServer->writeMsg("FriendListRequest"); //å‘é€å¥½å‹åˆ—è¡¨è¯·æ±‚
 }
 
 void Data::getMsgFromServer(QString msg)
 {
-	//Êä³öµ÷ÊÔĞÅÏ¢
+	//è¾“å‡ºè°ƒè¯•ä¿¡æ¯
 #ifdef _DEBUG
 	qDebug() << msg;
 #endif // _DEBUG
 
-	//»ñÈ¡ÏûÏ¢Í¨¹ı¿Õ¸ñ·Ö¸ôµÄÁĞ±í
+	//è·å–æ¶ˆæ¯é€šè¿‡ç©ºæ ¼åˆ†éš”çš„åˆ—è¡¨
 	QStringList msgList = msg.split(' ');
-	//ÅĞ¶Ï
-	//µÇÂ½³É¹¦
+	//åˆ¤æ–­
+	//ç™»é™†æˆåŠŸ
 	if (msgList[0] == "LoginSuccess")
 	{
 		loginSuccessHandle(msgList);
 	}
-	//µÇÂ½Ê§°Ü
+	//ç™»é™†å¤±è´¥
 	else if (msgList[0] == "LoginFailed")
 	{
 		loginFailedHandle(msgList);
 	}
-	//ÖØ¸´µÇÂ½
+	//é‡å¤ç™»é™†
 	else if (msgList[0] == "LoginRepeat")
 	{
 		loginRepeatHandle(msgList);
 	}
-	//×¢²á³É¹¦
+	//æ³¨å†ŒæˆåŠŸ
 	else if (msgList[0] == "RegisterSuccess")
 	{
 		registerSuccessHandle(msgList);
 	}
-	//»ñÈ¡×Ô¼ºµÄÓÃ»§ĞÅÏ¢
+	//è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
 	else if (msgList[0] == "MyInfo")
 	{
 		getMyInfoHandle(msgList);
 	}
-	//»ñÈ¡ºÃÓÑÁĞ±í
+	//è·å–å¥½å‹åˆ—è¡¨
 	else if (msgList[0] == "FriendList")
 	{
 		getFriendListHandle(msgList);
 	}
-	//½ÓÊÕºÃÓÑ·¢ËÍ¹ıÀ´µÄÁÄÌìÏûÏ¢
+	//æ¥æ”¶å¥½å‹å‘é€è¿‡æ¥çš„èŠå¤©æ¶ˆæ¯
 	else if (msgList[0] == "Message")
 	{
 		messageHandle(msgList);
 	}
-	//Ìí¼ÓºÃÓÑ£¬Ã»ÓĞÕâ¸öÓÃ»§µÄ»ØÓ¦
+	//æ·»åŠ å¥½å‹ï¼Œæ²¡æœ‰è¿™ä¸ªç”¨æˆ·çš„å›åº”
 	else if (msgList[0] == "NoThisUser")
 	{
 		noThisUserHandle(msgList);
@@ -132,30 +132,30 @@ void Data::registerSuccessHandle(QStringList msgList)
 
 void Data::getMyInfoHandle(QStringList msgList)
 {
-	//ÉèÖÃ×Ô¼ºÓÃ»§ĞÅÏ¢
+	//è®¾ç½®è‡ªå·±ç”¨æˆ·ä¿¡æ¯
 	myInfo->id = msgList[1];
 	myInfo->name = msgList[2];
-	//´«µİ¸øÖ÷½çÃæ
+	//ä¼ é€’ç»™ä¸»ç•Œé¢
 	emit getMyInfoSignal(msgList[1], msgList[2]);
 }
 
 void Data::getFriendListHandle(QStringList msgList)
 {
-	msgList.pop_front(); //È¥µôFriendListµÄÏûÏ¢Í·
-	emit getFriendListSignal(msgList); //°Ñ´¿´âµÄºÃÓÑÁĞ±íµÄĞÅÏ¢·¢ËÍ¹ıÈ¥
+	msgList.pop_front(); //å»æ‰FriendListçš„æ¶ˆæ¯å¤´
+	emit getFriendListSignal(msgList); //æŠŠçº¯ç²¹çš„å¥½å‹åˆ—è¡¨çš„ä¿¡æ¯å‘é€è¿‡å»
 }
 
 void Data::messageHandle(QStringList msgList)
 {
-	QString senderID = msgList[1]; //»ñÈ¡·¢ËÍ·½id
-	QString recverID = msgList[2]; //»ñÈ¡½ÓÊÕ·½id
-	//È¥µôMessage¡¢·¢ËÍ·½idºÍ½ÓÊÕ·½id
+	QString senderID = msgList[1]; //è·å–å‘é€æ–¹id
+	QString recverID = msgList[2]; //è·å–æ¥æ”¶æ–¹id
+	//å»æ‰Messageã€å‘é€æ–¹idå’Œæ¥æ”¶æ–¹id
 	msgList.pop_front();
 	msgList.pop_front();
 	msgList.pop_front();
-	//»ñÈ¡ÍêÕûµÄÏûÏ¢
+	//è·å–å®Œæ•´çš„æ¶ˆæ¯
 	QString msg = msgList.join(' ');
-	//·¢ËÍÏûÏ¢ºÍ·¢ËÍ·½id
+	//å‘é€æ¶ˆæ¯å’Œå‘é€æ–¹id
 	emit getMsgSignal(msg, senderID);
 }
 
@@ -175,7 +175,7 @@ void Data::loginRequestSlot(QString acountInfo)
 void Data::registerRequestSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->writeMsg(QString("RegisterRequest %1 %2").arg(acountInfoList[0].arg(acountInfoList[1])));
+	connectToServer->writeMsg(QString("RegisterRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
 }
 
 void Data::sendMsgSlot(QString msg, QString recverID)

@@ -1,11 +1,11 @@
-#ifndef SERVER_H
+ï»¿#ifndef SERVER_H
 #define SERVER_H
 
 #include <QTcpServer>
 #include "QSqlQuery"
 #include "clientthread.h"
 
-//·şÎñÆ÷
+//æœåŠ¡å™¨
 class Server : public QTcpServer
 {
 	Q_OBJECT
@@ -15,24 +15,24 @@ public:
 	~Server();
 
 private:
-	QVector<ClientThread *> threadPool; //Á¬½ÓÉÏµÄ¿Í»§¶ËµÄÏß³Ì³Ø
-	QSqlDatabase database; //Á¬½Óµ½µÄ±¾µØMySQLÊı¾İ¿â
-	QSqlQuery query; //²éÑ¯
+	QVector<ClientThread *> threadPool; //è¿æ¥ä¸Šçš„å®¢æˆ·ç«¯çš„çº¿ç¨‹æ± 
+	QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE"); //è¿æ¥åˆ°çš„æœ¬åœ°MySQLæ•°æ®åº“
+	QSqlQuery query = QSqlQuery(database); //æŸ¥è¯¢
 
-	void loginRequestHandle(ClientThread *sender, QStringList msgList); //µÇÂ½ÇëÇó´¦Àíº¯Êı
-	void registerRequestHandle(ClientThread *sender, QStringList msgList); //×¢²áÇëÇó´¦Àíº¯Êı
-	void myInfoRequestHandle(ClientThread *sender, QStringList msgList); //×ÔÉíÓÃ»§ĞÅÏ¢ÇëÇó´¦Àíº¯Êı
-	void friendListRequestHandle(ClientThread *sender, QStringList msgList); //ºÃÓÑÁĞ±íÇëÇó´¦Àíº¯Êı
-	void messageHandle(ClientThread *sender, QStringList msgList); //·¢ËÍÁÄÌìÏûÏ¢´¦Àíº¯Êı
-	void addFriendRequestHandle(ClientThread *sender, QStringList msgList); //Ìí¼ÓºÃÓÑÇëÇó´¦Àíº¯Êı
-	void delFriendRequestHandle(ClientThread *sender, QStringList msgList); //É¾³ıºÃÓÑÇëÇó´¦Àíº¯Êı
+	void loginRequestHandle(ClientThread *sender, QStringList msgList); //ç™»é™†è¯·æ±‚å¤„ç†å‡½æ•°
+	void registerRequestHandle(ClientThread *sender, QStringList msgList); //æ³¨å†Œè¯·æ±‚å¤„ç†å‡½æ•°
+	void myInfoRequestHandle(ClientThread *sender, QStringList msgList); //è‡ªèº«ç”¨æˆ·ä¿¡æ¯è¯·æ±‚å¤„ç†å‡½æ•°
+	void friendListRequestHandle(ClientThread *sender, QStringList msgList); //å¥½å‹åˆ—è¡¨è¯·æ±‚å¤„ç†å‡½æ•°
+	void messageHandle(ClientThread *sender, QStringList msgList); //å‘é€èŠå¤©æ¶ˆæ¯å¤„ç†å‡½æ•°
+	void addFriendRequestHandle(ClientThread *sender, QStringList msgList); //æ·»åŠ å¥½å‹è¯·æ±‚å¤„ç†å‡½æ•°
+	void delFriendRequestHandle(ClientThread *sender, QStringList msgList); //åˆ é™¤å¥½å‹è¯·æ±‚å¤„ç†å‡½æ•°
 
 protected:
-	void incomingConnection(qintptr handle) override; //ÖØĞ´Á¬½Óµ½À´µÄÊ±ºò´¦Àí
+	void incomingConnection(qintptr handle) override; //é‡å†™è¿æ¥åˆ°æ¥çš„æ—¶å€™å¤„ç†
 
-	private slots:
-	void disconnectToClientSlot(); //¶Ï¿ªÁ¬½Ó²Û
-	void getMsgFromClientSlot(QString msg); //»ñµÃÏûÏ¢µÄ´¦Àíº¯Êı
+private slots:
+	void disconnectToClientSlot(); //æ–­å¼€è¿æ¥æ§½
+	void getMsgFromClientSlot(QString msg); //è·å¾—æ¶ˆæ¯çš„å¤„ç†å‡½æ•°
 };
 
 #endif // SERVER_H

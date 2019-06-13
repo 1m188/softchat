@@ -1,25 +1,25 @@
-#include "server.h"
+ï»¿#include "server.h"
 #include "QDebug"
 
 Server::Server(QObject *parent)
-	: QTcpServer(parent), threadPool({}), database(QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"))), query(QSqlQuery(database))
+	: QTcpServer(parent)
 {
-	//³õÊ¼»¯±¾µØÁ¬½ÓÊı¾İ¿â
-	database.setDatabaseName("softchat");
-	database.setHostName("127.0.0.1");
-	database.setPort(3306);
-	database.setUserName("root");
-	database.setPassword("123456");
+	//åˆå§‹åŒ–æœ¬åœ°è¿æ¥æ•°æ®åº“
+	database.setDatabaseName("softchat.db");
 	database.open();
 
-	//¿ªÊ¼¼àÌı±¾µØip£¬8888¶Ë¿Ú
+	//åˆ›å»ºacountç”¨æˆ·ä¿¡æ¯è¡¨
+	query.prepare("create table acount(id char(10) not null,name char(50) not null,password char(50) not null);");
+	query.exec();
+
+	//å¼€å§‹ç›‘å¬æœ¬åœ°ipï¼Œ8888ç«¯å£
 	listen(QHostAddress::Any, 8888);
-	qDebug() << u8"¿ªÊ¼¼àÌı±¾µØIP£¬8888¶Ë¿Ú...";
+	qDebug() << u8"å¼€å§‹ç›‘å¬æœ¬åœ°IPï¼Œ8888ç«¯å£...";
 }
 
 Server::~Server()
 {
-	//ÊÍ·ÅÊı¾İ¿âÁ¬½Ó×ÊÔ´
+	//é‡Šæ”¾æ•°æ®åº“è¿æ¥èµ„æº
 	query.clear();
 	database.close();
 }
@@ -27,10 +27,10 @@ Server::~Server()
 void Server::incomingConnection(qintptr handle)
 {
 	ClientThread *clientThread = new ClientThread(nullptr, handle);
-	connect(clientThread, &ClientThread::disconnectToClientSignal, this, &Server::disconnectToClientSlot); //¶Ï¿ªÁ¬½ÓÔò×ªµ½ÏàÓ¦´¦Àíº¯Êı
-	connect(clientThread, &ClientThread::getMsgFromClientSignal, this, &Server::getMsgFromClientSlot); //»ñµÃÏûÏ¢
-	threadPool.push_back(clientThread); //¼ÓÈëÏß³Ì³Ø
-	clientThread->start(); //Æô¶¯Ïß³Ì
+	connect(clientThread, &ClientThread::disconnectToClientSignal, this, &Server::disconnectToClientSlot); //æ–­å¼€è¿æ¥åˆ™è½¬åˆ°ç›¸åº”å¤„ç†å‡½æ•°
+	connect(clientThread, &ClientThread::getMsgFromClientSignal, this, &Server::getMsgFromClientSlot); //è·å¾—æ¶ˆæ¯
+	threadPool.push_back(clientThread); //åŠ å…¥çº¿ç¨‹æ± 
+	clientThread->start(); //å¯åŠ¨çº¿ç¨‹
 
 	qDebug() << QString("a new connection with handle %1, the num of the client is %2").arg(handle).arg(threadPool.size());
 }
@@ -38,54 +38,54 @@ void Server::incomingConnection(qintptr handle)
 void Server::disconnectToClientSlot()
 {
 	ClientThread *sender = dynamic_cast<ClientThread *>(this->sender());
-	sender->exit(); //ÍË³öÏß³Ì
-	threadPool.removeOne(sender); //´ÓÏß³Ì³ØÖĞÉ¾³ı
-	sender->deleteLater(); //ÊÍ·Å×ÊÔ´
+	sender->exit(); //é€€å‡ºçº¿ç¨‹
+	threadPool.removeOne(sender); //ä»çº¿ç¨‹æ± ä¸­åˆ é™¤
+	sender->deleteLater(); //é‡Šæ”¾èµ„æº
 
 	qDebug() << QString("a connection disconnect, the num of the client is %1").arg(threadPool.size());
 }
 
 void Server::getMsgFromClientSlot(QString msg)
 {
-	//»ñÈ¡·¢ËÍ·½
+	//è·å–å‘é€æ–¹
 	ClientThread *sender = dynamic_cast<ClientThread *>(this->sender());
-	//Êä³öÁ¬½ÓÏà¹ØĞÅÏ¢
+	//è¾“å‡ºè¿æ¥ç›¸å…³ä¿¡æ¯
 	qDebug() << sender->getID() << "id send message" << msg;
-	//»ñÈ¡ÏûÏ¢ÁĞ±í
+	//è·å–æ¶ˆæ¯åˆ—è¡¨
 	QStringList msgList = msg.split(' ');
 
-	//ÅĞ¶¨
-	//µÇÂ½ÇëÇó
+	//åˆ¤å®š
+	//ç™»é™†è¯·æ±‚
 	if (msgList[0] == "LoginRequest")
 	{
 		loginRequestHandle(sender, msgList);
 	}
-	//×¢²áÇëÇó
+	//æ³¨å†Œè¯·æ±‚
 	else if (msgList[0] == "RegisterRequest")
 	{
 		registerRequestHandle(sender, msgList);
 	}
-	//×Ô¼ºµÄÓÃ»§ĞÅÏ¢ÇëÇó
+	//è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯è¯·æ±‚
 	else if (msgList[0] == "MyInfoRequest")
 	{
 		myInfoRequestHandle(sender, msgList);
 	}
-	//ºÃÓÑÁĞ±íÇëÇó
+	//å¥½å‹åˆ—è¡¨è¯·æ±‚
 	else if (msgList[0] == "FriendListRequest")
 	{
 		friendListRequestHandle(sender, msgList);
 	}
-	//·¢ËÍÁÄÌìÏûÏ¢
+	//å‘é€èŠå¤©æ¶ˆæ¯
 	else if (msgList[0] == "Message")
 	{
 		messageHandle(sender, msgList);
 	}
-	//Ìí¼ÓºÃÓÑÇëÇó
+	//æ·»åŠ å¥½å‹è¯·æ±‚
 	else if (msgList[0] == "AddFriendRequest")
 	{
 		addFriendRequestHandle(sender, msgList);
 	}
-	//É¾³ıºÃÓÑÇëÇó
+	//åˆ é™¤å¥½å‹è¯·æ±‚
 	else if (msgList[0] == "DelFriendRequest")
 	{
 		delFriendRequestHandle(sender, msgList);
@@ -94,53 +94,53 @@ void Server::getMsgFromClientSlot(QString msg)
 
 void Server::loginRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡µÇÂ½idºÍÃÜÂë
+	//è·å–ç™»é™†idå’Œå¯†ç 
 	QString id = msgList[1];
 	QString password = msgList[2];
 
-	//ÑéÖ¤ÊÇ·ñÒÑ¾­µÇÂ½
+	//éªŒè¯æ˜¯å¦å·²ç»ç™»é™†
 	for (ClientThread *c : threadPool)
 	{
 		if (c->getID() == id)
 		{
-			emit sender->sendMsgToClientSignal("LoginRepeat"); //ÖØ¸´µÇÂ½
+			emit sender->sendMsgToClientSignal("LoginRepeat"); //é‡å¤ç™»é™†
 			return;
 		}
 	}
 
-	//ÑéÖ¤µÇÂ½ÊÇ·ñÕıÈ·
+	//éªŒè¯ç™»é™†æ˜¯å¦æ­£ç¡®
 	query.exec(QString("select * from acount where id='%1' and password='%2'").arg(id).arg(password));
 	if (query.next())
 	{
-		emit sender->sendMsgToClientSignal("LoginSuccess"); //µÇÂ½³É¹¦
+		emit sender->sendMsgToClientSignal("LoginSuccess"); //ç™»é™†æˆåŠŸ
 		sender->setID(id);
 	}
 	else
 	{
-		emit sender->sendMsgToClientSignal("LoginFailed"); //µÇÂ½Ê§°Ü
+		emit sender->sendMsgToClientSignal("LoginFailed"); //ç™»é™†å¤±è´¥
 	}
 }
 
 void Server::registerRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡×¢²áµÄêÇ³ÆºÍÃÜÂë
+	//è·å–æ³¨å†Œçš„æ˜µç§°å’Œå¯†ç 
 	QString name = msgList[1];
 	QString password = msgList[2];
-	//»ñÈ¡ĞÂµÄid
+	//è·å–æ–°çš„id
 	query.exec("select * from acount");
 	QString id = QString::number(query.size() + 1);
 
-	query.exec(QString("insert into acount values('%1','%2','%3')").arg(id).arg(name).arg(password)); //²åÈëÓÃ»§Ïà¹ØĞÅÏ¢µ½ÓÃ»§±íÖĞ
-	query.exec(QString("create table friend%1(friendid char(10) not null);").arg(id)); //½¨Á¢Ò»¸öÓÃ»§µÄºÃÓÑ±í
-	emit sender->sendMsgToClientSignal(QString("RegisterSuccess") + ' ' + id); //×¢²á³É¹¦
+	query.exec(QString("insert into acount values('%1','%2','%3')").arg(id).arg(name).arg(password)); //æ’å…¥ç”¨æˆ·ç›¸å…³ä¿¡æ¯åˆ°ç”¨æˆ·è¡¨ä¸­
+	query.exec(QString("create table friend%1(friendid char(10) not null);").arg(id)); //å»ºç«‹ä¸€ä¸ªç”¨æˆ·çš„å¥½å‹è¡¨
+	emit sender->sendMsgToClientSignal(QString("RegisterSuccess") + ' ' + id); //æ³¨å†ŒæˆåŠŸ
 }
 
 void Server::myInfoRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡·¢ËÍ·½id
+	//è·å–å‘é€æ–¹id
 	QString id = sender->getID();
-	query.exec(QString("select name from acount where id='%1';").arg(id)); //²éÑ¯×Ô¼ºid¶ÔÓ¦µÄidºÍêÇ³Æ×÷Îª×Ô¼ºµÄÓÃ»§ĞÅÏ¢·µ»Ø
-	//ÕûÀí·¢ËÍµÄ·µ»ØÏûÏ¢
+	query.exec(QString("select name from acount where id='%1';").arg(id)); //æŸ¥è¯¢è‡ªå·±idå¯¹åº”çš„idå’Œæ˜µç§°ä½œä¸ºè‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯è¿”å›
+	//æ•´ç†å‘é€çš„è¿”å›æ¶ˆæ¯
 	QString myInfo = "MyInfo";
 	myInfo += ' ';
 	myInfo += id;
@@ -149,15 +149,15 @@ void Server::myInfoRequestHandle(ClientThread * sender, QStringList msgList)
 	{
 		myInfo += query.value("name").toString();
 	}
-	//·¢ËÍÏûÏ¢
+	//å‘é€æ¶ˆæ¯
 	emit sender->sendMsgToClientSignal(myInfo);
 }
 
 void Server::friendListRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	QString id = sender->getID(); //»ñÈ¡·¢ËÍ·½id
-	query.exec(QString("select id,name from acount,friend%1 where acount.id=friend%2.friendid;").arg(id).arg(id)); //²éÑ¯ÏàÓ¦idµÄºÃÓÑ±íÖĞµÄËùÓĞµÄºÃÓÑµÄidºÍêÇ³Æ
-	//ÕûÀí·¢ËÍ·µ»ØµÄÏûÏ¢
+	QString id = sender->getID(); //è·å–å‘é€æ–¹id
+	query.exec(QString("select id,name from acount,friend%1 where acount.id=friend%2.friendid;").arg(id).arg(id)); //æŸ¥è¯¢ç›¸åº”idçš„å¥½å‹è¡¨ä¸­çš„æ‰€æœ‰çš„å¥½å‹çš„idå’Œæ˜µç§°
+	//æ•´ç†å‘é€è¿”å›çš„æ¶ˆæ¯
 	QString friendList = "FriendList";
 	while (query.next())
 	{
@@ -166,51 +166,51 @@ void Server::friendListRequestHandle(ClientThread * sender, QStringList msgList)
 		friendList += '_';
 		friendList += query.value("name").toString();
 	}
-	//·¢ËÍ
+	//å‘é€
 	emit sender->sendMsgToClientSignal(friendList);
 }
 
 void Server::messageHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡½ÓÊÕ·½id
+	//è·å–æ¥æ”¶æ–¹id
 	QString recvID = msgList[2];
-	//ÔÚÁ¬½ÓÉÏµÄ¿Í»§¶Ë³ØÖĞ²éÕÒ½ÓÊÕ·½
+	//åœ¨è¿æ¥ä¸Šçš„å®¢æˆ·ç«¯æ± ä¸­æŸ¥æ‰¾æ¥æ”¶æ–¹
 	for (ClientThread *c : threadPool)
 	{
-		//Èç¹ûÔÚµÄ»°
+		//å¦‚æœåœ¨çš„è¯
 		if (c->getID() == recvID)
 		{
-			//Ô­·â²»¶¯·¢ËÍÏûÏ¢
+			//åŸå°ä¸åŠ¨å‘é€æ¶ˆæ¯
 			emit c->sendMsgToClientSignal(msgList.join(' '));
 			return;
 		}
 	}
-	//Èç¹ûÃ»ÓĞÉÏÏßµÄ»°¾ÍÏò·¢ËÍ·½·¢ËÍÏà¹ØÌáÊ¾ĞÅÏ¢
-	emit sender->sendMsgToClientSignal(QString("Message %1 %2 %3").arg(recvID).arg(msgList[1]).arg(tr(u8"¸ÃÓÃ»§Ä¿Ç°Ã»ÓĞÉÏÏß£¬ÄãµÄÏûÏ¢¿ÉÄÜÎŞ·¨µ½´ï£¡")));
+	//å¦‚æœæ²¡æœ‰ä¸Šçº¿çš„è¯å°±å‘å‘é€æ–¹å‘é€ç›¸å…³æç¤ºä¿¡æ¯
+	emit sender->sendMsgToClientSignal(QString("Message %1 %2 %3").arg(recvID).arg(msgList[1]).arg(tr(u8"è¯¥ç”¨æˆ·ç›®å‰æ²¡æœ‰ä¸Šçº¿ï¼Œä½ çš„æ¶ˆæ¯å¯èƒ½æ— æ³•åˆ°è¾¾ï¼")));
 }
 
 void Server::addFriendRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡±»ÇëÇóÌí¼Ó·½id
+	//è·å–è¢«è¯·æ±‚æ·»åŠ æ–¹id
 	QString friendID = msgList[1];
 
-	//ÑéÖ¤ÊÇ·ñÓĞÕâ¸öÓÃ»§
+	//éªŒè¯æ˜¯å¦æœ‰è¿™ä¸ªç”¨æˆ·
 	query.exec(QString("select id from acount where id='%1';").arg(friendID));
-	//Èç¹ûÃ»ÓĞÕâ¸öÓÃ»§µÄ»°
+	//å¦‚æœæ²¡æœ‰è¿™ä¸ªç”¨æˆ·çš„è¯
 	if (!query.next())
 	{
 		emit sender->sendMsgToClientSignal(QString("NoThisUser"));
 	}
 	else
 	{
-		//·ñÔò¸øË«·½Ìí¼ÓºÃÓÑ
+		//å¦åˆ™ç»™åŒæ–¹æ·»åŠ å¥½å‹
 		query.exec(QString("insert into friend%1 values('%2');").arg(sender->getID()).arg(friendID));
 		query.exec(QString("insert into friend%1 values('%2');").arg(friendID).arg(sender->getID()));
 
-		//¸ø·¢ËÍ·½¸üĞÂºÃÓÑÁĞ±í
+		//ç»™å‘é€æ–¹æ›´æ–°å¥½å‹åˆ—è¡¨
 		friendListRequestHandle(sender, QString("FriendListRequest").split(' '));
 
-		//Èç¹û±»Ìí¼Ó·½Ò²ÔÚÏßµÄ»°£¬ÔòÒ²¸ø±»Ìí¼Ó·½¸üĞÂºÃÓÑÁĞ±í
+		//å¦‚æœè¢«æ·»åŠ æ–¹ä¹Ÿåœ¨çº¿çš„è¯ï¼Œåˆ™ä¹Ÿç»™è¢«æ·»åŠ æ–¹æ›´æ–°å¥½å‹åˆ—è¡¨
 		for (int i = 0; i < threadPool.count(); i++)
 		{
 			if (threadPool[i]->getID() == friendID)
@@ -224,14 +224,14 @@ void Server::addFriendRequestHandle(ClientThread * sender, QStringList msgList)
 
 void Server::delFriendRequestHandle(ClientThread * sender, QStringList msgList)
 {
-	//»ñÈ¡Òª±»É¾³ıµÄºÃÓÑid
+	//è·å–è¦è¢«åˆ é™¤çš„å¥½å‹id
 	QString friendID = msgList[1];
 
-	//¸øÇëÇó·½ºÍ±»ÇëÇó·½»¥ÏàÉ¾³ı
+	//ç»™è¯·æ±‚æ–¹å’Œè¢«è¯·æ±‚æ–¹äº’ç›¸åˆ é™¤
 	query.exec(QString("delete from friend%1 where friendid='%2';").arg(sender->getID()).arg(friendID));
 	query.exec(QString("delete from friend%1 where friendid='%2';").arg(friendID).arg(sender->getID()));
 
-	//Èç¹û±»ÇëÇó·½ÔÚÏßµÄ»°£¬¸ø±»ÇëÇó·½¸üĞÂºÃÓÑÁĞ±í
+	//å¦‚æœè¢«è¯·æ±‚æ–¹åœ¨çº¿çš„è¯ï¼Œç»™è¢«è¯·æ±‚æ–¹æ›´æ–°å¥½å‹åˆ—è¡¨
 	for (int i = 0; i < threadPool.count(); i++)
 	{
 		if (threadPool[i]->getID() == friendID)

@@ -128,7 +128,8 @@ void Server::registerRequestHandle(ClientThread * sender, QStringList msgList)
 	QString password = msgList[2];
 	//获取新的id
 	query.exec("select * from acount");
-	QString id = QString::number(query.size() + 1);
+	query.last();
+	QString id = QString::number(query.value(0).toInt() + 1);
 
 	query.exec(QString("insert into acount values('%1','%2','%3')").arg(id).arg(name).arg(password)); //插入用户相关信息到用户表中
 	query.exec(QString("create table friend%1(friendid char(10) not null);").arg(id)); //建立一个用户的好友表

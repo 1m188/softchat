@@ -1,4 +1,4 @@
-#ifndef DATA_H
+ï»¿#ifndef DATA_H
 #define DATA_H
 
 #include <QObject>
@@ -7,11 +7,7 @@
 #include "maingui.h"
 #include "extern.h"
 
-#ifdef _DEBUG
-#include "QDebug"
-#endif // _DEBUG
-
-//ºóÌ¨Ïß³ÌÔËĞĞµÄÊı¾İÀà
+//åå°çº¿ç¨‹è¿è¡Œçš„æ•°æ®ç±»
 class Data : public QObject
 {
 	Q_OBJECT
@@ -21,54 +17,54 @@ public:
 	~Data();
 
 private:
-	TcpSocket *connectToServer; //Á¬½Óµ½·şÎñÆ÷µÄsocket
-	UserInfo *myInfo; //×Ô¼ºµÄÓÃ»§ĞÅÏ¢
+	TcpSocket *connectToServer; //è¿æ¥åˆ°æœåŠ¡å™¨çš„socket
+	UserInfo *myInfo; //è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
 
-	void loginSuccessHandle(QStringList msgList); //µÇÂ½³É¹¦µÄÏìÓ¦
-	void loginFailedHandle(QStringList msgList); //µÇÂ½Ê§°ÜµÄÏìÓ¦
-	void loginRepeatHandle(QStringList msgList); //ÖØ¸´µÇÂ½µÄÏìÓ¦
-	void registerSuccessHandle(QStringList msgList); //×¢²á³É¹¦µÄÏìÓ¦
-	void getMyInfoHandle(QStringList msgList); //»ñÈ¡×Ô¼ºµÄÓÃ»§ĞÅÏ¢µÄÏìÓ¦
-	void getFriendListHandle(QStringList msgList); //»ñÈ¡ºÃÓÑÁĞ±íµÄÏìÓ¦
-	void messageHandle(QStringList msgList); //½ÓÊÕºÃÓÑ·¢ËÍ¹ıÀ´µÄÁÄÌìÏûÏ¢µÄÏìÓ¦
-	void noThisUserHandle(QStringList msgList); //Ìí¼ÓºÃÓÑÊ±·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
+	void loginSuccessHandle(QStringList msgList); //ç™»é™†æˆåŠŸçš„å“åº”
+	void loginFailedHandle(QStringList msgList); //ç™»é™†å¤±è´¥çš„å“åº”
+	void loginRepeatHandle(QStringList msgList); //é‡å¤ç™»é™†çš„å“åº”
+	void registerSuccessHandle(QStringList msgList); //æ³¨å†ŒæˆåŠŸçš„å“åº”
+	void getMyInfoHandle(QStringList msgList); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯çš„å“åº”
+	void getFriendListHandle(QStringList msgList); //è·å–å¥½å‹åˆ—è¡¨çš„å“åº”
+	void messageHandle(QStringList msgList); //æ¥æ”¶å¥½å‹å‘é€è¿‡æ¥çš„èŠå¤©æ¶ˆæ¯çš„å“åº”
+	void noThisUserHandle(QStringList msgList); //æ·»åŠ å¥½å‹æ—¶è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
 
 public:
-	//¶ÔÍâµÄÓÃÀ´×öµÇÂ½½çÃæºÍÖ÷½çÃæµÄĞÅºÅ¼°ĞÅºÅ²ÛµÄÁ¬½ÓµÄ½Ó¿Ú
+	//å¯¹å¤–çš„ç”¨æ¥åšç™»é™†ç•Œé¢å’Œä¸»ç•Œé¢çš„ä¿¡å·åŠä¿¡å·æ§½çš„è¿æ¥çš„æ¥å£
 	void addSignalSlots(LoginGui *loginGui) { emit addSignalSlotsForClassSignal(loginGui); }
 	void addSignalSlots(MainGui *mainGui) { emit addSignalSlotsForClassSignal(mainGui); }
 
 signals:
-	//ÉÏÃæËµµ½µÄ½Ó¿ÚÖĞ·¢ËÍµÄĞÅºÅ£¬Ê¹µÃÕæÕıµÄÁ¬½Ó¹¤×÷ÔÚÁíÒ»¸öÏß³ÌÖĞÍê³É
+	//ä¸Šé¢è¯´åˆ°çš„æ¥å£ä¸­å‘é€çš„ä¿¡å·ï¼Œä½¿å¾—çœŸæ­£çš„è¿æ¥å·¥ä½œåœ¨å¦ä¸€ä¸ªçº¿ç¨‹ä¸­å®Œæˆ
 	void addSignalSlotsForClassSignal(LoginGui *loginGui);
 	void addSignalSlotsForClassSignal(MainGui *mainGui);
 
-	void loginSignal(); //µÇÂ½ĞÅºÅ
-	void loginFailedSignal(); //µÇÂ½Ê§°Ü
-	void loginRepeatSignal(); //ÖØ¸´µÇÂ½
-	void registerSuccessSignal(QString id); //×¢²á³É¹¦
+	void loginSignal(); //ç™»é™†ä¿¡å·
+	void loginFailedSignal(); //ç™»é™†å¤±è´¥
+	void loginRepeatSignal(); //é‡å¤ç™»é™†
+	void registerSuccessSignal(QString id); //æ³¨å†ŒæˆåŠŸ
 
-	void getMyInfoSignal(QString id, QString name); //»ñÈ¡×Ô¼ºµÄÓÃ»§ĞÅÏ¢
-	void getFriendListSignal(QStringList friendList); //»ñÈ¡ºÃÓÑÁĞ±í
-	void getMsgSignal(QString msg, QString senderID); //½ÓÊÕÁÄÌìÏûÏ¢
+	void getMyInfoSignal(QString id, QString name); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	void getFriendListSignal(QStringList friendList); //è·å–å¥½å‹åˆ—è¡¨
+	void getMsgSignal(QString msg, QString senderID); //æ¥æ”¶èŠå¤©æ¶ˆæ¯
 
-	void noThisUserSignal(); //Ìí¼ÓºÃÓÑÊ±·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
+	void noThisUserSignal(); //æ·»åŠ å¥½å‹æ—¶è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
 
-	private slots:
-	//ÓÃÀ´ÔÚÁíÒ»¸öÏß³ÌÖĞÏìÓ¦Ìí¼ÓĞÅºÅ¼°ĞÅºÅ²ÛÁ¬½ÓµÄĞÅºÅ²Û
+private slots:
+	//ç”¨æ¥åœ¨å¦ä¸€ä¸ªçº¿ç¨‹ä¸­å“åº”æ·»åŠ ä¿¡å·åŠä¿¡å·æ§½è¿æ¥çš„ä¿¡å·æ§½
 	void addSignalSlotsForClassSlot(LoginGui *loginGui);
 	void addSignalSlotsForClassSlot(MainGui *mainGui);
 
-	void init(); //dataÀàÔÚÁíÒ»¸öÏß³ÌÖĞµÄ³õÊ¼»¯
-	void getMsgFromServer(QString msg); //´Ó·şÎñÆ÷»ñÈ¡ÏûÏ¢
+	void init(); //dataç±»åœ¨å¦ä¸€ä¸ªçº¿ç¨‹ä¸­çš„åˆå§‹åŒ–
+	void getMsgFromServer(QString msg); //ä»æœåŠ¡å™¨è·å–æ¶ˆæ¯
 
-	void loginRequestSlot(QString acountInfo); //·¢ËÍµÇÂ½ÇëÇó
-	void registerRequestSlot(QString acountInfo); //·¢ËÍ×¢²áÇëÇó
+	void loginRequestSlot(QString acountInfo); //å‘é€ç™»é™†è¯·æ±‚
+	void registerRequestSlot(QString acountInfo); //å‘é€æ³¨å†Œè¯·æ±‚
 
-	void sendMsgSlot(QString msg, QString recverID); //·¢ËÍÁÄÌìÏûÏ¢
+	void sendMsgSlot(QString msg, QString recverID); //å‘é€èŠå¤©æ¶ˆæ¯
 
-	void addFriendRequestSlot(QString friendID); //·¢ËÍÌí¼ÓºÃÓÑÇëÇó
-	void delFriendRequestSlot(QString friendID); //·¢ËÍÉ¾³ıºÃÓÑÇëÇó
+	void addFriendRequestSlot(QString friendID); //å‘é€æ·»åŠ å¥½å‹è¯·æ±‚
+	void delFriendRequestSlot(QString friendID); //å‘é€åˆ é™¤å¥½å‹è¯·æ±‚
 };
 
 #endif // DATA_H

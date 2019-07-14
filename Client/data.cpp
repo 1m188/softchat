@@ -1,6 +1,10 @@
 ﻿#include "data.h"
 #include "QThread"
 
+#ifdef _DEBUG
+#include "QDebug"
+#endif // _DEBUG
+
 Data::Data(QObject *parent)
 	: QObject(parent), connectToServer(nullptr), myInfo(nullptr)
 {

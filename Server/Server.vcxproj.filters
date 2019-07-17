@@ -42,20 +42,11 @@
     <ClCompile Include="GeneratedFiles\Release\moc_server.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="server.cpp">
-      <Filter>服务器</Filter>
-    </ClCompile>
-    <ClCompile Include="clientthread.cpp">
-      <Filter>客户端连接线程</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_clientthread.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_clientthread.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="tcpsocket.cpp">
-      <Filter>socket</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_tcpsocket.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -63,19 +54,28 @@
     <ClCompile Include="GeneratedFiles\Release\moc_tcpsocket.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="TcpSocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>服务器</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientThread.cpp">
+      <Filter>客户端连接线程</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="server.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="server.h">
+    <CustomBuild Include="TcpSocket.h">
+      <Filter>socket</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Server.h">
       <Filter>服务器</Filter>
     </CustomBuild>
-    <CustomBuild Include="clientthread.h">
+    <CustomBuild Include="ClientThread.h">
       <Filter>客户端连接线程</Filter>
-    </CustomBuild>
-    <CustomBuild Include="tcpsocket.h">
-      <Filter>socket</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

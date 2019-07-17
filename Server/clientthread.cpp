@@ -1,4 +1,4 @@
-#include "clientthread.h"
+ï»¿#include "ClientThread.h"
 
 ClientThread::ClientThread(QObject *parent, qintptr handle)
 	: QThread(parent), connectToClient(nullptr), handle(handle), id("")
@@ -13,12 +13,12 @@ ClientThread::~ClientThread()
 
 void ClientThread::run()
 {
-	//ÔÚÐÂÏß³ÌÖÐ´´½¨ºÍ¿Í»§¶ËÁ¬½ÓµÄsocket
+	//åœ¨æ–°çº¿ç¨‹ä¸­åˆ›å»ºå’Œå®¢æˆ·ç«¯è¿žæŽ¥çš„socket
 	connectToClient = new TcpSocket(nullptr);
 	connectToClient->setSocketDescriptor(handle);
-	connect(this, &QThread::finished, connectToClient, &QTcpSocket::deleteLater); //Ïß³ÌÍË³öÔò´ËsocketÏú»Ù
-	connect(connectToClient, &TcpSocket::disconnected, this, &ClientThread::disconnectToClientSignal); //¶Ï¿ªÁ¬½Ó
-	connect(connectToClient, &TcpSocket::getMsgSignal, this, &ClientThread::getMsgFromClientSignal); //»ñµÃÁËÐÂµÄÏûÏ¢Ôò×ªµ½Ïß³ÌÖÐÁíÍâµÄ´¦Àíº¯Êý
-	connect(this, &ClientThread::sendMsgToClientSignal, connectToClient, [&](QString msg) {connectToClient->writeMsg(msg); }); //·¢ËÍÕ³°ü´¦Àí¹ýµÄÏûÏ¢
-	exec(); //ÊÂ¼þÑ­»·
+	connect(this, &QThread::finished, connectToClient, &QTcpSocket::deleteLater); //çº¿ç¨‹é€€å‡ºåˆ™æ­¤socketé”€æ¯
+	connect(connectToClient, &TcpSocket::disconnected, this, &ClientThread::disconnectToClientSignal); //æ–­å¼€è¿žæŽ¥
+	connect(connectToClient, &TcpSocket::getMsgSignal, this, &ClientThread::getMsgFromClientSignal); //èŽ·å¾—äº†æ–°çš„æ¶ˆæ¯åˆ™è½¬åˆ°çº¿ç¨‹ä¸­å¦å¤–çš„å¤„ç†å‡½æ•°
+	connect(this, &ClientThread::sendMsgToClientSignal, connectToClient, [&](QString msg) {connectToClient->writeMsg(msg); }); //å‘é€ç²˜åŒ…å¤„ç†è¿‡çš„æ¶ˆæ¯
+	exec(); //äº‹ä»¶å¾ªçŽ¯
 }

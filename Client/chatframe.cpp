@@ -1,4 +1,4 @@
-#include "chatframe.h"
+ï»¿#include "ChatFrame.h"
 #include "QPushButton"
 #include "QGridLayout"
 #include "QEvent"
@@ -7,18 +7,18 @@
 ChatFrame::ChatFrame(QWidget *parent, UserInfo friendInfo)
 	: QFrame(parent), friendInfo(friendInfo), sendTextEdit(new QTextEdit(this)), recvTextEdit(new QTextEdit(this))
 {
-	//¿Ø¼þ
-	recvTextEdit->setReadOnly(true); //½«½ÓÊÕÏûÏ¢ÎÄ±¾¿òÉèÖÃÎªÖ»¶Á
-	sendTextEdit->installEventFilter(this); //°²×°ÊÂ¼þ¹ýÂËÆ÷£¬ÒÔÊµÏÖ»Ø³µ¼ü·¢ËÍÏûÏ¢£¬ÆäËû¼ü+»Ø³µ¼ü»»ÐÐµÄ¹¦ÄÜ
+	//æŽ§ä»¶
+	recvTextEdit->setReadOnly(true); //å°†æŽ¥æ”¶æ¶ˆæ¯æ–‡æœ¬æ¡†è®¾ç½®ä¸ºåªè¯»
+	sendTextEdit->installEventFilter(this); //å®‰è£…äº‹ä»¶è¿‡æ»¤å™¨ï¼Œä»¥å®žçŽ°å›žè½¦é”®å‘é€æ¶ˆæ¯ï¼Œå…¶ä»–é”®+å›žè½¦é”®æ¢è¡Œçš„åŠŸèƒ½
 
 	QPushButton *sendButton = new QPushButton(this);
 	sendButton->setDefault(true);
-	sendButton->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	sendButton->setText(tr(u8"·¢ËÍ"));
+	sendButton->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	sendButton->setText(tr(u8"å‘é€"));
 	sendButton->resize(sendButton->sizeHint());
 	connect(sendButton, &QPushButton::clicked, this, &ChatFrame::sendButtonClicked);
 
-	//²¼¾Ö
+	//å¸ƒå±€
 	QGridLayout *layout = new QGridLayout(this);
 	layout->addWidget(recvTextEdit, 0, 0, 10, 10);
 	layout->addWidget(sendTextEdit, 10, 0, 5, 10);
@@ -32,24 +32,24 @@ ChatFrame::~ChatFrame()
 
 bool ChatFrame::eventFilter(QObject * watched, QEvent * event)
 {
-	//Èç¹ûµ±Ç°½¹µã¾Û½¹µ½·¢ËÍÎÄ±¾¿ò
+	//å¦‚æžœå½“å‰ç„¦ç‚¹èšç„¦åˆ°å‘é€æ–‡æœ¬æ¡†
 	if (watched == sendTextEdit)
 	{
-		//Èç¹ûÊÂ¼þÎª°´¼ü
+		//å¦‚æžœäº‹ä»¶ä¸ºæŒ‰é”®
 		if (event->type() == QEvent::KeyPress)
 		{
 			QKeyEvent *key = static_cast<QKeyEvent *>(event);
-			//Èç¹û°´ÏÂµÄÊÇ»Ø³µ¼üÇÒÃ»ÓÐÈÎºÎÐÞÊÎ¼ü
+			//å¦‚æžœæŒ‰ä¸‹çš„æ˜¯å›žè½¦é”®ä¸”æ²¡æœ‰ä»»ä½•ä¿®é¥°é”®
 			if (key->modifiers() == Qt::KeyboardModifier::NoModifier && key->key() == Qt::Key_Return)
 			{
-				//Ôò´¥·¢·¢ËÍÏûÏ¢
+				//åˆ™è§¦å‘å‘é€æ¶ˆæ¯
 				sendButtonClicked();
 				return true;
 			}
-			//·ñÔòÈç¹û°´ÏÂµÄ¼üÊÇ»Ø³µ
+			//å¦åˆ™å¦‚æžœæŒ‰ä¸‹çš„é”®æ˜¯å›žè½¦
 			else if (key->key() == Qt::Key_Return)
 			{
-				key->setModifiers(Qt::KeyboardModifier::NoModifier); //È¡ÏûÐÞÊÎ¼ü£¬ÒÔÈÃ·¢ËÍÎÄ±¾¿òÖ´ÐÐ»»ÐÐ²Ù×÷
+				key->setModifiers(Qt::KeyboardModifier::NoModifier); //å–æ¶ˆä¿®é¥°é”®ï¼Œä»¥è®©å‘é€æ–‡æœ¬æ¡†æ‰§è¡Œæ¢è¡Œæ“ä½œ
 				return false;
 			}
 			else
@@ -62,7 +62,7 @@ bool ChatFrame::eventFilter(QObject * watched, QEvent * event)
 			return false;
 		}
 	}
-	//·ñÔò½»¸ø¸¸ÀàµÄÏà¹Øº¯ÊýÊµÏÖ
+	//å¦åˆ™äº¤ç»™çˆ¶ç±»çš„ç›¸å…³å‡½æ•°å®žçŽ°
 	else
 	{
 		return QWidget::eventFilter(watched, event);
@@ -71,26 +71,26 @@ bool ChatFrame::eventFilter(QObject * watched, QEvent * event)
 
 void ChatFrame::sendButtonClicked()
 {
-	//»ñÈ¡Òª·¢ËÍµÄÏûÏ¢
+	//èŽ·å–è¦å‘é€çš„æ¶ˆæ¯
 	QString msg = sendTextEdit->toPlainText();
-	//Èç¹û²»Îª¿Õ
+	//å¦‚æžœä¸ä¸ºç©º
 	if (msg != "")
 	{
-		//¸üÐÂ½ÓÊÕÏûÏ¢ÎÄ±¾¿ò
-		recvTextEdit->append(u8"ÎÒ: " + msg);
-		//·¢ËÍ
+		//æ›´æ–°æŽ¥æ”¶æ¶ˆæ¯æ–‡æœ¬æ¡†
+		recvTextEdit->append(u8"æˆ‘: " + msg);
+		//å‘é€
 		emit sendMsgSignal(msg, friendInfo.id);
-		//Çå¿Õ·¢ËÍÎÄ±¾¿ò
+		//æ¸…ç©ºå‘é€æ–‡æœ¬æ¡†
 		sendTextEdit->clear();
 	}
 }
 
 void ChatFrame::getMsgSlot(QString msg, QString senderID)
 {
-	//Èç¹ûÕâ¸öÏûÏ¢ÊÇ·¢¸ø×Ô¼ºµÄ
+	//å¦‚æžœè¿™ä¸ªæ¶ˆæ¯æ˜¯å‘ç»™è‡ªå·±çš„
 	if (senderID == friendInfo.id)
 	{
-		//¸üÐÂ½ÓÊÕÏûÏ¢ÎÄ±¾¿ò
+		//æ›´æ–°æŽ¥æ”¶æ¶ˆæ¯æ–‡æœ¬æ¡†
 		recvTextEdit->append(friendInfo.name + ": " + msg);
 	}
 }

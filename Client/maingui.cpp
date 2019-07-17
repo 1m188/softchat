@@ -1,9 +1,9 @@
-﻿#include "maingui.h"
+﻿#include "MainGui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QMenuBar"
 #include "QGridLayout"
-#include "addfriendgui.h"
+#include "AddFriendGui.h"
 #include "QMessageBox"
 #include "Data.h"
 

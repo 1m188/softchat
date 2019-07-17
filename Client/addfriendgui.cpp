@@ -1,4 +1,4 @@
-#include "addfriendgui.h"
+ï»¿#include "AddFriendGui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"
@@ -9,42 +9,42 @@
 AddFriendGui::AddFriendGui(QWidget *parent, UserInfo myInfo)
 	: QWidget(parent), myInfo(myInfo), idLineEdit(new QLineEdit(this))
 {
-	//½çÃæ»ù±¾ÉèÖÃ
+	//ç•Œé¢åŸºæœ¬è®¾ç½®
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setAttribute(Qt::WA_QuitOnClose, false);
 
-	//ÉèÖÃ½çÃæ±êÌâºÍ´óĞ¡
-	setWindowTitle(tr(u8"Ìí¼ÓºÃÓÑ"));
+	//è®¾ç½®ç•Œé¢æ ‡é¢˜å’Œå¤§å°
+	setWindowTitle(tr(u8"æ·»åŠ å¥½å‹"));
 	setFixedSize(600, 300);
 
-	//ÒÆ¶¯µ½ÆÁÄ»ÖĞÑëÎ»ÖÃ
+	//ç§»åŠ¨åˆ°å±å¹•ä¸­å¤®ä½ç½®
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
 
-	//¿Ø¼ş+²¼¾Ö
+	//æ§ä»¶+å¸ƒå±€
 	QLabel *infoLabel = new QLabel(this);
 	infoLabel->setAlignment(Qt::AlignCenter);
-	infoLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 15));
-	infoLabel->setText(tr(u8"ÇëÊäÈëÒªÌí¼ÓµÄºÃÓÑµÄID"));
+	infoLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 15));
+	infoLabel->setText(tr(u8"è¯·è¾“å…¥è¦æ·»åŠ çš„å¥½å‹çš„ID"));
 	infoLabel->resize(infoLabel->sizeHint());
 	infoLabel->move(width() / 2 - infoLabel->width() / 2, height() / 2 / 2 - infoLabel->height() / 2);
 
 	QLabel *idLabel = new QLabel(this);
 	idLabel->setAlignment(Qt::AlignCenter);
-	idLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	idLabel->setText(tr(u8"ÓÃ»§ID"));
+	idLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	idLabel->setText(tr(u8"ç”¨æˆ·ID"));
 	idLabel->resize(idLabel->sizeHint());
 	idLabel->move(width() / 2 - idLabel->width() - 80, infoLabel->y() + infoLabel->height() + 65);
 
-	idLineEdit->setValidator(new QRegExpValidator(QRegExp("[0-9]+$"), idLineEdit)); ///ÏŞÖÆid¿òÊäÈëÀàĞÍ
+	idLineEdit->setValidator(new QRegExpValidator(QRegExp("[0-9]+$"), idLineEdit)); ///é™åˆ¶idæ¡†è¾“å…¥ç±»å‹
 	idLineEdit->resize(idLineEdit->sizeHint());
 	idLineEdit->move(width() / 2 + width() / 2 - idLabel->x() - idLabel->width() - 50, idLabel->y() + idLabel->height() / 2 - idLineEdit->height() / 2);
 	connect(idLineEdit, &QLineEdit::returnPressed, this, &AddFriendGui::addButtonClicked);
 
 	QPushButton *addButton = new QPushButton(this);
-	addButton->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 9));
-	addButton->setText(tr(u8"Ìí¼Ó"));
+	addButton->setFont(QFont(u8"å¾®è½¯é›…é»‘", 9));
+	addButton->setText(tr(u8"æ·»åŠ "));
 	addButton->resize(addButton->sizeHint());
 	addButton->move(width() - addButton->width() - 10, height() - addButton->height() - 10);
 	connect(addButton, &QPushButton::clicked, this, &AddFriendGui::addButtonClicked);
@@ -57,37 +57,37 @@ AddFriendGui::~AddFriendGui()
 
 void AddFriendGui::closeEvent(QCloseEvent * event)
 {
-	//·¢ËÍ¹Ø±ÕĞÅºÅ£¬¸æËßÖ÷½çÃæ¸Ã½çÃæÒÑ¾­¹Ø±Õ£¬¿ÉÒÔÖØĞÂ´ò¿ª
+	//å‘é€å…³é—­ä¿¡å·ï¼Œå‘Šè¯‰ä¸»ç•Œé¢è¯¥ç•Œé¢å·²ç»å…³é—­ï¼Œå¯ä»¥é‡æ–°æ‰“å¼€
 	emit closeSignal();
 	return QWidget::closeEvent(event);
 }
 
 void AddFriendGui::addButtonClicked()
 {
-	//»ñÈ¡ÒªÌí¼ÓµÄºÃÓÑid
+	//è·å–è¦æ·»åŠ çš„å¥½å‹id
 	QString friendID = idLineEdit->text();
-	//Èç¹ûÎª¿Õ
+	//å¦‚æœä¸ºç©º
 	if (friendID == "")
 	{
-		QMessageBox::critical(this, tr(u8"´íÎó"), tr(u8"ºÃÓÑid²»¿ÉÎª¿Õ£¡"), QMessageBox::Ok);
+		QMessageBox::critical(this, tr(u8"é”™è¯¯"), tr(u8"å¥½å‹idä¸å¯ä¸ºç©ºï¼"), QMessageBox::Ok);
 	}
 	else if (friendID == myInfo.id)
 	{
-		QMessageBox::critical(this, tr(u8"´íÎó"), tr(u8"²»¿ÉÌí¼Ó×Ô¼ºÎªºÃÓÑ£¡"), QMessageBox::Ok);
+		QMessageBox::critical(this, tr(u8"é”™è¯¯"), tr(u8"ä¸å¯æ·»åŠ è‡ªå·±ä¸ºå¥½å‹ï¼"), QMessageBox::Ok);
 	}
 	else
 	{
-		//·ñÔò·¢ËÍÌí¼ÓºÃÓÑĞÅºÅ
+		//å¦åˆ™å‘é€æ·»åŠ å¥½å‹ä¿¡å·
 		emit addFriendRequestSignal(friendID);
 	}
 }
 
 void AddFriendGui::addFriendRepeatSlot()
 {
-	QMessageBox::information(this, tr(u8"ÖØ¸´Ìí¼Ó"), tr(u8"ÄúÒÑ¾­Ìí¼ÓÁËÕâ¸öºÃÓÑ£¡"), QMessageBox::Ok);
+	QMessageBox::information(this, tr(u8"é‡å¤æ·»åŠ "), tr(u8"æ‚¨å·²ç»æ·»åŠ äº†è¿™ä¸ªå¥½å‹ï¼"), QMessageBox::Ok);
 }
 
 void AddFriendGui::noThisUserSlot()
 {
-	QMessageBox::critical(this, tr(u8"´íÎó"), tr(u8"Ã»ÓĞ´ËÓÃ»§£¡"), QMessageBox::Ok);
+	QMessageBox::critical(this, tr(u8"é”™è¯¯"), tr(u8"æ²¡æœ‰æ­¤ç”¨æˆ·ï¼"), QMessageBox::Ok);
 }

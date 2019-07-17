@@ -1,4 +1,4 @@
-#include "tcpsocket.h"
+ï»¿#include "TcpSocket.h"
 #include "QDataStream"
 
 TcpSocket::TcpSocket(QObject *parent)
@@ -14,11 +14,11 @@ TcpSocket::~TcpSocket()
 
 void TcpSocket::writeMsg(QString msg)
 {
-	QByteArray sendMsg; //Òª·¢ËÍµÄ°ü
-	QDataStream out(&sendMsg, QIODevice::WriteOnly); //ÓÃÀ´²Ù×İ°ü¶ÁĞ´µÄQDataStream
+	QByteArray sendMsg; //è¦å‘é€çš„åŒ…
+	QDataStream out(&sendMsg, QIODevice::WriteOnly); //ç”¨æ¥æ“çºµåŒ…è¯»å†™çš„QDataStream
 	out.setVersion(QDataStream::Qt_5_9);
-	out << static_cast<qint32>(msg.size() * 2) << msg; //¶ÁÈëÒ»¸ö4×Ö½ÚµÄÒª·¢ËÍµÄÏûÏ¢µÄ´óĞ¡£¨ÕâÀïQString»á×ªÎªunicode£¬Ã¿¸öÔ­À´µÄ×Ö·ûÕ¼Á½¸ö×Ö½Ú£¬ËùÒÔ×Ö½Ú´óĞ¡ÒªÔÚÔ­À´µÄsizeµÄ»ù´¡ÉÏx2£©£¬È»ºóÔÙ¶ÁÈëÒª·¢ËÍµÄÏûÏ¢ //¹Ø¼üÖ®´¦
-	write(sendMsg); //·¢ËÍ
+	out << static_cast<qint32>(msg.size() * 2) << msg; //è¯»å…¥ä¸€ä¸ª4å­—èŠ‚çš„è¦å‘é€çš„æ¶ˆæ¯çš„å¤§å°ï¼ˆè¿™é‡ŒQStringä¼šè½¬ä¸ºunicodeï¼Œæ¯ä¸ªåŸæ¥çš„å­—ç¬¦å ä¸¤ä¸ªå­—èŠ‚ï¼Œæ‰€ä»¥å­—èŠ‚å¤§å°è¦åœ¨åŸæ¥çš„sizeçš„åŸºç¡€ä¸Šx2ï¼‰ï¼Œç„¶åå†è¯»å…¥è¦å‘é€çš„æ¶ˆæ¯ //å…³é”®ä¹‹å¤„
+	write(sendMsg); //å‘é€
 }
 
 void TcpSocket::getMsg()

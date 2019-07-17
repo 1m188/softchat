@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "QListWidget"
-#include "chatframe.h"
+#include "ChatFrame.h"
 #include "extern.h"
 
 //主界面

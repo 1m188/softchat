@@ -3,7 +3,7 @@
 
 #include <QTcpServer>
 #include "QSqlQuery"
-#include "clientthread.h"
+#include "ClientThread.h"
 
 //服务器
 class Server : public QTcpServer

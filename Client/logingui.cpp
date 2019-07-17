@@ -1,10 +1,10 @@
-﻿#include "logingui.h"
+﻿#include "LoginGui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"
 #include "QPushButton"
 #include "QMessageBox"
-#include "registergui.h"
+#include "RegisterGui.h"
 #include "Data.h"
 
 LoginGui::LoginGui(QWidget *parent)

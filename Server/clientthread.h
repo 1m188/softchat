@@ -1,10 +1,10 @@
-#ifndef CLIENTTHREAD_H
+ï»¿#ifndef CLIENTTHREAD_H
 #define CLIENTTHREAD_H
 
 #include <QThread>
-#include "tcpsocket.h"
+#include "TcpSocket.h"
 
-//Á¬½ÓÉÏµÄ¿Í»§¶ËËùÔÚµÄÏß³Ì
+//è¿æ¥ä¸Šçš„å®¢æˆ·ç«¯æ‰€åœ¨çš„çº¿ç¨‹
 class ClientThread : public QThread
 {
 	Q_OBJECT
@@ -14,21 +14,21 @@ public:
 	~ClientThread();
 
 private:
-	TcpSocket *connectToClient; //ºÍ¿Í»§¶ËÁ¬½ÓµÄsocket
-	qintptr handle; //socketÃèÊö¾ä±ú
-	QString id; //ÓÃ»§id
+	TcpSocket *connectToClient; //å’Œå®¢æˆ·ç«¯è¿æ¥çš„socket
+	qintptr handle; //socketæè¿°å¥æŸ„
+	QString id; //ç”¨æˆ·id
 
 public:
-	const QString getID() const { return id; } //»ñÈ¡Õâ¸öÏß³ÌÖĞËùÁ¬½ÓµÄclientµÄid
-	void setID(QString id) { this->id = id; } //ÉèÖÃÕâ¸öÏß³ÌËùÁ¬½ÓµÄclientµÄid
+	const QString getID() const { return id; } //è·å–è¿™ä¸ªçº¿ç¨‹ä¸­æ‰€è¿æ¥çš„clientçš„id
+	void setID(QString id) { this->id = id; } //è®¾ç½®è¿™ä¸ªçº¿ç¨‹æ‰€è¿æ¥çš„clientçš„id
 
 protected:
-	void run() override; //ÖØĞ´runº¯Êı
+	void run() override; //é‡å†™runå‡½æ•°
 
 signals:
-	void disconnectToClientSignal(); //ºÍ¿Í»§¶Ë¶Ï¿ªÁ¬½ÓĞÅºÅ
-	void getMsgFromClientSignal(QString msg); //´Ó¿Í»§¶Ë»ñÈ¡ÏûÏ¢ĞÅºÅ
-	void sendMsgToClientSignal(QString msg); //¸ø¿Í»§¶Ë·¢ËÍÏûÏ¢ĞÅºÅ
+	void disconnectToClientSignal(); //å’Œå®¢æˆ·ç«¯æ–­å¼€è¿æ¥ä¿¡å·
+	void getMsgFromClientSignal(QString msg); //ä»å®¢æˆ·ç«¯è·å–æ¶ˆæ¯ä¿¡å·
+	void sendMsgToClientSignal(QString msg); //ç»™å®¢æˆ·ç«¯å‘é€æ¶ˆæ¯ä¿¡å·
 };
 
 #endif // CLIENTTHREAD_H

@@ -1,4 +1,4 @@
-﻿#include "server.h"
+﻿#include "Server.h"
 #include "QDebug"
 
 Server::Server(QObject *parent)

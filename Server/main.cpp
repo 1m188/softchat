@@ -1,10 +1,10 @@
-#include <QtWidgets/QApplication>
-#include "server.h"
+ï»¿#include <QtWidgets/QApplication>
+#include "Server.h"
 
 int main(int argc, char *argv[])
 {
 #ifdef NDEBUG
-	QApplication::addLibraryPath("./plugins"); //×ö·¢²¼°æ±¾Ê±Òª¼ÓÉÏ
+	QApplication::addLibraryPath("./plugins"); //åšå‘å¸ƒç‰ˆæœ¬æ—¶è¦åŠ ä¸Š
 #endif // NDEBUG
 
 	QApplication a(argc, argv);

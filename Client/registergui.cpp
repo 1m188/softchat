@@ -1,4 +1,4 @@
-#include "registergui.h"
+ï»¿#include "RegisterGui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"
@@ -8,39 +8,39 @@
 RegisterGui::RegisterGui(QWidget *parent)
 	: QDialog(parent), nameLineEdit(new QLineEdit(this)), passwordLineEdit(new QLineEdit(this))
 {
-	//½çÃæ»ù±¾ÉèÖÃ
+	//ç•Œé¢åŸºæœ¬è®¾ç½®
 	setAttribute(Qt::WA_QuitOnClose, false);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setWindowFlags(Qt::WindowCloseButtonHint);
 
-	//ÉèÖÃ±êÌâºÍ´óÐ¡
-	setWindowTitle(tr(u8"×¢²á"));
+	//è®¾ç½®æ ‡é¢˜å’Œå¤§å°
+	setWindowTitle(tr(u8"æ³¨å†Œ"));
 	setFixedSize(600, 300);
 
-	//ÒÆ¶¯µ½ÆÁÄ»ÖÐÑë
+	//ç§»åŠ¨åˆ°å±å¹•ä¸­å¤®
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
 
-	//¿Ø¼þ+²¼¾Ö
+	//æŽ§ä»¶+å¸ƒå±€
 	QLabel *infoLabel = new QLabel(this);
 	infoLabel->setAlignment(Qt::AlignCenter);
-	infoLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 12));
-	infoLabel->setText(tr(u8"ÇëÊäÈëÒª×¢²áµÄêÇ³ÆºÍÃÜÂë"));
+	infoLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 12));
+	infoLabel->setText(tr(u8"è¯·è¾“å…¥è¦æ³¨å†Œçš„æ˜µç§°å’Œå¯†ç "));
 	infoLabel->resize(infoLabel->sizeHint());
 	infoLabel->move(width() / 2 - infoLabel->width() / 2, height() / 6);
 
 	QLabel *nameLabel = new QLabel(this);
 	nameLabel->setAlignment(Qt::AlignCenter);
-	nameLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	nameLabel->setText(tr(u8"êÇ³Æ"));
+	nameLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	nameLabel->setText(tr(u8"æ˜µç§°"));
 	nameLabel->resize(nameLabel->sizeHint());
 	nameLabel->move(infoLabel->x() + infoLabel->width() / 2 - 150, infoLabel->y() + infoLabel->height() + 50);
 
 	QLabel *passwordLabel = new QLabel(this);
 	passwordLabel->setAlignment(Qt::AlignCenter);
-	passwordLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	passwordLabel->setText(tr(u8"ÃÜÂë"));
+	passwordLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	passwordLabel->setText(tr(u8"å¯†ç "));
 	passwordLabel->resize(passwordLabel->sizeHint());
 	passwordLabel->move(nameLabel->x(), nameLabel->y() + nameLabel->height() + 50);
 
@@ -53,7 +53,7 @@ RegisterGui::RegisterGui(QWidget *parent)
 
 	QPushButton *registerButton = new QPushButton(this);
 	registerButton->setDefault(true);
-	registerButton->setText(tr(u8"×¢²á"));
+	registerButton->setText(tr(u8"æ³¨å†Œ"));
 	registerButton->resize(registerButton->sizeHint());
 	registerButton->move(width() - registerButton->width() - 10, height() - registerButton->height() - 10);
 	connect(registerButton, &QPushButton::clicked, this, &RegisterGui::registerButtonClicked);
@@ -66,21 +66,21 @@ RegisterGui::~RegisterGui()
 
 void RegisterGui::registerButtonClicked()
 {
-	//Èç¹û×¢²áêÇ³Æ»òÃÜÂëÎª¿Õ
+	//å¦‚æžœæ³¨å†Œæ˜µç§°æˆ–å¯†ç ä¸ºç©º
 	if (nameLineEdit->text() == "" || passwordLineEdit->text() == "")
 	{
-		QMessageBox::warning(this, tr(u8"¾¯¸æ"), tr(u8"êÇ³Æ»òÃÜÂë²»¿ÉÎª¿Õ£¡"));
+		QMessageBox::warning(this, tr(u8"è­¦å‘Š"), tr(u8"æ˜µç§°æˆ–å¯†ç ä¸å¯ä¸ºç©ºï¼"));
 	}
 	else
 	{
-		//·ñÔò·¢ËÍ×¢²áÐÅÏ¢
+		//å¦åˆ™å‘é€æ³¨å†Œä¿¡æ¯
 		emit registerRequestSignal(nameLineEdit->text() + ' ' + passwordLineEdit->text());
 	}
 }
 
 void RegisterGui::registerSuccessSlot(QString id)
 {
-	QMessageBox::about(this, tr(u8"×¢²á³É¹¦"), tr(u8"ÄãµÄidÊÇ" + id.toUtf8()));
+	QMessageBox::about(this, tr(u8"æ³¨å†ŒæˆåŠŸ"), tr(u8"ä½ çš„idæ˜¯" + id.toUtf8()));
 	nameLineEdit->clear();
 	passwordLineEdit->clear();
 }

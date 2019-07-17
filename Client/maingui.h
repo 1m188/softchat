@@ -1,4 +1,4 @@
-#ifndef MAINGUI_H
+ï»¿#ifndef MAINGUI_H
 #define MAINGUI_H
 
 #include <QWidget>
@@ -6,43 +6,45 @@
 #include "chatframe.h"
 #include "extern.h"
 
-//Ö÷½çÃæ
+//ä¸»ç•Œé¢
 class MainGui : public QWidget
 {
 	Q_OBJECT
+
+private:
+	UserInfo myInfo; //è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	QListWidget *friendList; //å¥½å‹åˆ—è¡¨
+	QWidget *framePlace; //èŠå¤©ç•Œé¢å¤§å°çš„Widgetï¼ˆç”¨æ¥åœ¨å¸ƒå±€çš„æ—¶å€™å åœ°ï¼Œä»¥åŠä¹‹åç»™èŠå¤©ç•Œé¢æä¾›å®¹å™¨ï¼‰
+	QVector<ChatFrame *> chatFramePool; //èŠå¤©ç•Œé¢åˆ—è¡¨
+	bool isAddFriendGuiOpen; //æ·»åŠ å¥½å‹ç•Œé¢æ˜¯å¦è¢«æ‰“å¼€
 
 public:
 	MainGui(QWidget *parent);
 	~MainGui();
 
-private:
-	UserInfo myInfo; //×Ô¼ºµÄÓÃ»§ĞÅÏ¢
-	QListWidget *friendList; //ºÃÓÑÁĞ±í
-	QWidget *framePlace; //ÁÄÌì½çÃæ´óĞ¡µÄWidget£¨ÓÃÀ´ÔÚ²¼¾ÖµÄÊ±ºòÕ¼µØ£¬ÒÔ¼°Ö®ºó¸øÁÄÌì½çÃæÌá¹©ÈİÆ÷£©
-	QVector<ChatFrame *> chatFramePool; //ÁÄÌì½çÃæÁĞ±í
-	bool isAddFriendGuiOpen; //Ìí¼ÓºÃÓÑ½çÃæÊÇ·ñ±»´ò¿ª
-
 protected:
-	void resizeEvent(QResizeEvent *event) override; //ÖØĞ´¸Ä±ä´óĞ¡ÊÂ¼ş£¬Ê¹µÃ´°¿Ú´óĞ¡¸Ä±äµÄÊ±ºòÈÃÁÄÌì½çÃæËæÖ®¸Ä±ä
+	void resizeEvent(QResizeEvent *event) override; //é‡å†™æ”¹å˜å¤§å°äº‹ä»¶ï¼Œä½¿å¾—çª—å£å¤§å°æ”¹å˜çš„æ—¶å€™è®©èŠå¤©ç•Œé¢éšä¹‹æ”¹å˜
 
 signals:
-	void sendMsgSignal(QString msg, QString recverID); //·¢ËÍÁÄÌìÏûÏ¢
-	void getMsgSignal(QString msg, QString senderID); //»ñÈ¡ÁÄÌìÏûÏ¢
-	void addFriendRepeatSignal(); //ÒÑ¾­Ìí¼ÓÁËÕâ¸öºÃÓÑ
-	void addFriendRequestSignal(QString friendID); //Ìí¼ÓºÃÓÑ
-	void noThisUserSignal(); //Ìí¼ÓºÃÓÑÊ±·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
-	void delFriendRequestSignal(QString friendID); //É¾³ıºÃÓÑ
+	void getMyUserInfoSignal(); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	void getFriendListSignal(); //è·å–å¥½å‹åˆ—è¡¨
+	void sendMsgSignal(QString msg, QString recverID); //å‘é€èŠå¤©æ¶ˆæ¯
+	void getMsgSignal(QString msg, QString senderID); //è·å–èŠå¤©æ¶ˆæ¯
+	void addFriendRepeatSignal(); //å·²ç»æ·»åŠ äº†è¿™ä¸ªå¥½å‹
+	void addFriendRequestSignal(QString friendID); //æ·»åŠ å¥½å‹
+	void noThisUserSignal(); //æ·»åŠ å¥½å‹æ—¶è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
+	void delFriendRequestSignal(QString friendID); //åˆ é™¤å¥½å‹
 
-	private slots:
-	void friendListItemDoubleClicked(QListWidgetItem *item); //Ë«»÷ºÃÓÑÁĞ±íÖĞµÄÄ³Ò»Ïî£¬ÏÔÊ¾Ïà¹ØµÄÁÄÌì½çÃæ
-	void addFriendActionTriggered(); //Ìí¼ÓºÃÓÑ
-	void addFriendRequestSlot(QString friendID); //ÏìÓ¦Ìí¼ÓºÃÓÑ½çÃæµÄÌí¼ÓºÃÓÑĞÅºÅ
-	void delFriendActionTriggered(); //É¾³ıºÃÓÑ
+private slots:
+	void friendListItemDoubleClicked(QListWidgetItem *item); //åŒå‡»å¥½å‹åˆ—è¡¨ä¸­çš„æŸä¸€é¡¹ï¼Œæ˜¾ç¤ºç›¸å…³çš„èŠå¤©ç•Œé¢
+	void addFriendActionTriggered(); //æ·»åŠ å¥½å‹
+	void addFriendRequestSlot(QString friendID); //å“åº”æ·»åŠ å¥½å‹ç•Œé¢çš„æ·»åŠ å¥½å‹ä¿¡å·
+	void delFriendActionTriggered(); //åˆ é™¤å¥½å‹
 
-	public slots:
-	void getMyInfoSlot(QString id, QString name); //»ñÈ¡×Ô¼ºµÄÓÃ»§ĞÅÏ¢
-	void updateFriendList(QStringList friendList); //¸üĞÂºÃÓÑÁĞ±í
-	void getMsgSlot(QString msg, QString senderID); //»ñÈ¡ÁÄÌìÏûÏ¢
+public slots:
+	void getMyInfoSlot(QString id, QString name); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	void updateFriendList(QStringList friendList); //æ›´æ–°å¥½å‹åˆ—è¡¨
+	void getMsgSlot(QString msg, QString senderID); //è·å–èŠå¤©æ¶ˆæ¯
 };
 
 #endif // MAINGUI_H

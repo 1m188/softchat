@@ -1,4 +1,4 @@
-#include <QtWidgets/QApplication>
+ï»¿#include <QtWidgets/QApplication>
 #include "data.h"
 #include "logingui.h"
 #include "maingui.h"
@@ -6,27 +6,24 @@
 int main(int argc, char *argv[])
 {
 #ifdef NDEBUG
-	QApplication::addLibraryPath("./plugins"); //×ö·¢²¼°æ±¾Ê±Òª¼ÓÉÏ
+	QApplication::addLibraryPath("./plugins"); //åšå‘å¸ƒç‰ˆæœ¬æ—¶è¦åŠ ä¸Š
 #endif // NDEBUG
 
 	QApplication a(argc, argv);
 
-	Data *data = new Data(nullptr); //³õÊ¼»¯Êý¾ÝÀà
+	Data::getInstance(); //åˆå§‹åŒ–æ•°æ®ç±»
 
-	//ÊµÀý»¯µÇÂ½½çÃæ²¢ÇÒºÍÊý¾ÝÀà½¨Á¢ÁªÏµ
+	//å®žä¾‹åŒ–ç™»é™†ç•Œé¢å¹¶ä¸”å’Œæ•°æ®ç±»å»ºç«‹è”ç³»
 	LoginGui *loginGui = new LoginGui(nullptr);
-	data->addSignalSlots(loginGui);
 	loginGui->show();
 
-	//ÅÐ¶¨¶Ô»°¿òÏÔÊ¾½á¹û
+	//åˆ¤å®šå¯¹è¯æ¡†æ˜¾ç¤ºç»“æžœ
 	if (loginGui->exec() == QDialog::Accepted)
 	{
-		//Èç¹ûÎ»AcceptÔò³öÏÖÖ÷½çÃæ£¬Á¬½ÓÊý¾ÝÀà²¢ÇÒ½øÈëÕýÊ½µÄÊÂ¼þÑ­»·
+		//å¦‚æžœä½Acceptåˆ™å‡ºçŽ°ä¸»ç•Œé¢ï¼Œè¿›å…¥æ­£å¼çš„äº‹ä»¶å¾ªçŽ¯
 		MainGui *mainGui = new MainGui(nullptr);
-		data->addSignalSlots(mainGui);
 		mainGui->show();
 		a.exec();
 	}
-	delete data;
 	return 0;
 }

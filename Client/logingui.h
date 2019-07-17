@@ -1,34 +1,34 @@
-#ifndef LOGINGUI_H
+ï»¿#ifndef LOGINGUI_H
 #define LOGINGUI_H
 
 #include <QDialog>
 #include "QLineEdit"
 
-//µÇÂ½½çÃæ
+//ç™»é™†ç•Œé¢
 class LoginGui : public QDialog
 {
 	Q_OBJECT
+
+private:
+	QLineEdit *idLineEdit; //idè¾“å…¥æ¡†
+	QLineEdit *passwordLineEdit; //å¯†ç è¾“å…¥æ¡†
 
 public:
 	LoginGui(QWidget *parent);
 	~LoginGui();
 
-private:
-	QLineEdit *idLineEdit; //idÊäÈë¿ò
-	QLineEdit *passwordLineEdit; //ÃÜÂëÊäÈë¿ò
-
 signals:
-	void loginRequestSignal(QString acountInfo); //µÇÂ½ÇëÇó
-	void registerRequestSignal(QString acountInfo); //×¢²áÇëÇó
-	void registerSuccessSignal(QString id); //×¢²á³É¹¦
+	void loginRequestSignal(QString acountInfo); //ç™»é™†è¯·æ±‚
+	void registerRequestSignal(QString acountInfo); //æ³¨å†Œè¯·æ±‚
+	void registerSuccessSignal(QString id); //æ³¨å†ŒæˆåŠŸ
 
-	private slots:
-	void loginButtonClicked(); //µÇÂ½°´Å¥°´ÏÂ
-	void registerButtonClicked(); //×¢²á°´Å¥°´ÏÂ
+private slots:
+	void loginButtonClicked(); //ç™»é™†æŒ‰é’®æŒ‰ä¸‹
+	void registerButtonClicked(); //æ³¨å†ŒæŒ‰é’®æŒ‰ä¸‹
 
-	public slots:
-	void loginFailedSlot(); //µÇÂ½Ê§°Ü
-	void loginRepeatSlot(); //ÖØ¸´µÇÂ½
+public slots:
+	void loginFailedSlot(); //ç™»é™†å¤±è´¥
+	void loginRepeatSlot(); //é‡å¤ç™»é™†
 };
 
 #endif // LOGINGUI_H

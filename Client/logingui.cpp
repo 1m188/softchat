@@ -1,47 +1,48 @@
-#include "logingui.h"
+ï»¿#include "logingui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"
 #include "QPushButton"
 #include "QMessageBox"
 #include "registergui.h"
+#include "Data.h"
 
 LoginGui::LoginGui(QWidget *parent)
 	: QDialog(parent), idLineEdit(new QLineEdit(this)), passwordLineEdit(new QLineEdit(this))
 {
-	//½çÃæ»ù±¾ÉèÖÃ
+	//ç•Œé¢åŸºæœ¬è®¾ç½®
 	setAttribute(Qt::WA_QuitOnClose, true);
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setWindowFlags(Qt::WindowCloseButtonHint);
 
-	//ÉèÖÃ±êÌâºÍ´óÐ¡
-	setWindowTitle(tr(u8"µÇÂ½"));
+	//è®¾ç½®æ ‡é¢˜å’Œå¤§å°
+	setWindowTitle(tr(u8"ç™»é™†"));
 	setFixedSize(600, 300);
 
-	//°Ñ½çÃæÒÆ¶¯µ½ÆÁÄ»ÖÐÑë
+	//æŠŠç•Œé¢ç§»åŠ¨åˆ°å±å¹•ä¸­å¤®
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
 
-	//¿Ø¼þ+²¼¾Ö
+	//æŽ§ä»¶+å¸ƒå±€
 	QLabel *infoLabel = new QLabel(this);
 	infoLabel->setAlignment(Qt::AlignCenter);
-	infoLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 12));
-	infoLabel->setText(tr(u8"ÇëÊäÈëÕËºÅºÍÃÜÂëµÇÂ½"));
+	infoLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 12));
+	infoLabel->setText(tr(u8"è¯·è¾“å…¥è´¦å·å’Œå¯†ç ç™»é™†"));
 	infoLabel->resize(infoLabel->sizeHint());
 	infoLabel->move(width() / 2 - infoLabel->width() / 2, height() / 6);
 
 	QLabel *idLabel = new QLabel(this);
 	idLabel->setAlignment(Qt::AlignCenter);
-	idLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	idLabel->setText(tr(u8"ÕËºÅ"));
+	idLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	idLabel->setText(tr(u8"è´¦å·"));
 	idLabel->resize(idLabel->sizeHint());
 	idLabel->move(infoLabel->x() + infoLabel->width() / 2 - 150, infoLabel->y() + infoLabel->height() + 50);
 
 	QLabel *passwordLabel = new QLabel(this);
 	passwordLabel->setAlignment(Qt::AlignCenter);
-	passwordLabel->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 10));
-	passwordLabel->setText(tr(u8"ÃÜÂë"));
+	passwordLabel->setFont(QFont(u8"å¾®è½¯é›…é»‘", 10));
+	passwordLabel->setText(tr(u8"å¯†ç "));
 	passwordLabel->resize(passwordLabel->sizeHint());
 	passwordLabel->move(idLabel->x(), idLabel->y() + idLabel->height() + 50);
 
@@ -54,16 +55,24 @@ LoginGui::LoginGui(QWidget *parent)
 
 	QPushButton *loginButton = new QPushButton(this);
 	loginButton->setDefault(true);
-	loginButton->setText(tr(u8"µÇÂ½"));
+	loginButton->setText(tr(u8"ç™»é™†"));
 	loginButton->resize(loginButton->sizeHint());
 	loginButton->move(width() - loginButton->width() - 10, height() - loginButton->height() - 10);
 	connect(loginButton, &QPushButton::clicked, this, &LoginGui::loginButtonClicked);
 
 	QPushButton *registerButton = new QPushButton(this);
-	registerButton->setText(tr(u8"×¢²á"));
+	registerButton->setText(tr(u8"æ³¨å†Œ"));
 	registerButton->resize(registerButton->sizeHint());
 	registerButton->move(width() - loginButton->x() - loginButton->width(), loginButton->y());
 	connect(registerButton, &QPushButton::clicked, this, &LoginGui::registerButtonClicked);
+
+	Data *data = Data::getInstance();
+	connect(this, &LoginGui::loginRequestSignal, data, &Data::loginRequestSlot); //ç™»é™†è¯·æ±‚
+	connect(this, &LoginGui::registerRequestSignal, data, &Data::registerRequestSlot); //æ³¨å†Œè¯·æ±‚
+	connect(data, &Data::loginSignal, this, &LoginGui::accept); //ä½¿ä¹‹ç™»é™†
+	connect(data, &Data::loginFailedSignal, this, &LoginGui::loginFailedSlot); //ç™»é™†å¤±è´¥
+	connect(data, &Data::loginRepeatSignal, this, &LoginGui::loginRepeatSlot); //é‡å¤ç™»é™†
+	connect(data, &Data::registerSuccessSignal, this, &LoginGui::registerSuccessSignal); //æ³¨å†ŒæˆåŠŸ
 }
 
 LoginGui::~LoginGui()
@@ -73,21 +82,21 @@ LoginGui::~LoginGui()
 
 void LoginGui::loginButtonClicked()
 {
-	//Èç¹ûid»òÃÜÂëÓÐÒ»¸öÎª¿Õ
+	//å¦‚æžœidæˆ–å¯†ç æœ‰ä¸€ä¸ªä¸ºç©º
 	if (idLineEdit->text() == "" || passwordLineEdit->text() == "")
 	{
-		QMessageBox::warning(this, tr(u8"¾¯¸æ"), tr(u8"ÕËºÅ»òÃÜÂë²»¿ÉÎª¿Õ£¡"));
+		QMessageBox::warning(this, tr(u8"è­¦å‘Š"), tr(u8"è´¦å·æˆ–å¯†ç ä¸å¯ä¸ºç©ºï¼"));
 	}
 	else
 	{
-		//·ñÔò·¢ËÍµÇÂ½ÐÅÏ¢
+		//å¦åˆ™å‘é€ç™»é™†ä¿¡æ¯
 		emit loginRequestSignal(idLineEdit->text() + ' ' + passwordLineEdit->text());
 	}
 }
 
 void LoginGui::registerButtonClicked()
 {
-	//×¢²á½çÃæ
+	//æ³¨å†Œç•Œé¢
 	RegisterGui *registerGui = new RegisterGui(nullptr);
 	connect(registerGui, &RegisterGui::registerRequestSignal, this, &LoginGui::registerRequestSignal);
 	connect(this, &LoginGui::registerSuccessSignal, registerGui, &RegisterGui::registerSuccessSlot);
@@ -96,12 +105,12 @@ void LoginGui::registerButtonClicked()
 
 void LoginGui::loginFailedSlot()
 {
-	QMessageBox::critical(this, tr(u8"µÇÂ½Ê§°Ü"), tr(u8"ÓÃ»§Ãû»òÃÜÂë´íÎó£¡"));
+	QMessageBox::critical(this, tr(u8"ç™»é™†å¤±è´¥"), tr(u8"ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯ï¼"));
 	passwordLineEdit->clear();
 }
 
 void LoginGui::loginRepeatSlot()
 {
-	QMessageBox::critical(this, tr(u8"µÇÂ½Ê§°Ü"), tr(u8"¸ÃÓÃ»§ÒÑ¾­µÇÂ½£¡"));
+	QMessageBox::critical(this, tr(u8"ç™»é™†å¤±è´¥"), tr(u8"è¯¥ç”¨æˆ·å·²ç»ç™»é™†ï¼"));
 	passwordLineEdit->clear();
 }

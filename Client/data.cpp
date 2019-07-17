@@ -1,12 +1,23 @@
 ﻿#include "data.h"
 #include "QThread"
+#include "QApplication"
 
 #ifdef _DEBUG
 #include "QDebug"
 #endif // _DEBUG
 
-Data::Data(QObject *parent)
-	: QObject(parent), connectToServer(nullptr), myInfo(nullptr)
+Data *Data::instance = nullptr; //初始化单例句柄
+
+Data *Data::getInstance()
+{
+	if (!instance)
+	{
+		instance = new Data();
+	}
+	return instance;
+}
+
+Data::Data()
 {
 	//把本类的所有信号槽响应放在另一个线程中
 	QThread *thread = new QThread();
@@ -26,40 +37,12 @@ Data::~Data()
 
 void Data::init()
 {
-	//给外部用来调用的接口中发送的信号和相关信号槽的连接
-	connect(this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (LoginGui *)>(&Data::addSignalSlotsForClassSlot));
-	connect(this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSignal), this, static_cast<void (Data::*) (MainGui *)>(&Data::addSignalSlotsForClassSlot));
-
 	connectToServer = new TcpSocket(nullptr); //初始化和服务器连接的socket
 	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater); //资源管理
 	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer); //从服务器获取的消息处理
 	connectToServer->connectToHost("127.0.0.1", 8888); //连接到相关服务器（本地）的8888端口
 
 	myInfo = new UserInfo(); //初始化自己的用户信息
-}
-
-void Data::addSignalSlotsForClassSlot(LoginGui *loginGui)
-{
-	connect(loginGui, &LoginGui::loginRequestSignal, this, &Data::loginRequestSlot); //登陆请求
-	connect(loginGui, &LoginGui::registerRequestSignal, this, &Data::registerRequestSlot); //注册请求
-	connect(this, &Data::loginSignal, loginGui, &LoginGui::accept); //使之登陆
-	connect(this, &Data::loginFailedSignal, loginGui, &LoginGui::loginFailedSlot); //登陆失败
-	connect(this, &Data::loginRepeatSignal, loginGui, &LoginGui::loginRepeatSlot); //重复登陆
-	connect(this, &Data::registerSuccessSignal, loginGui, &LoginGui::registerSuccessSignal); //注册成功
-}
-
-void Data::addSignalSlotsForClassSlot(MainGui *mainGui)
-{
-	connect(mainGui, &MainGui::sendMsgSignal, this, &Data::sendMsgSlot); //发送聊天消息
-	connect(this, &Data::getMyInfoSignal, mainGui, &MainGui::getMyInfoSlot); //获取自己的用户信息
-	connect(this, &Data::getFriendListSignal, mainGui, &MainGui::updateFriendList); //获取好友列表并且更新好友列表
-	connect(this, &Data::getMsgSignal, mainGui, &MainGui::getMsgSlot); //接收到聊天信息
-	connect(mainGui, &MainGui::addFriendRequestSignal, this, &Data::addFriendRequestSlot); //发送添加好友请求
-	connect(this, &Data::noThisUserSignal, mainGui, &MainGui::noThisUserSignal); //添加好友时返回没有这个用户
-	connect(mainGui, &MainGui::delFriendRequestSignal, this, &Data::delFriendRequestSlot); //发送删除好友请求
-
-	connectToServer->writeMsg("MyInfoRequest"); //发送自己用户信息请求
-	connectToServer->writeMsg("FriendListRequest"); //发送好友列表请求
 }
 
 void Data::getMsgFromServer(QString msg)
@@ -195,4 +178,14 @@ void Data::addFriendRequestSlot(QString friendID)
 void Data::delFriendRequestSlot(QString friendID)
 {
 	connectToServer->writeMsg(QString("DelFriendRequest %1").arg(friendID));
+}
+
+void Data::getMyUserInfoSlot()
+{
+	connectToServer->writeMsg("MyInfoRequest"); //发送自己用户信息请求
+}
+
+void Data::getFriendListSlot()
+{
+	connectToServer->writeMsg("FriendListRequest"); //发送好友列表请求
 }

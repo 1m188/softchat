@@ -1,55 +1,71 @@
-#include "maingui.h"
+ï»¿#include "maingui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QMenuBar"
 #include "QGridLayout"
 #include "addfriendgui.h"
 #include "QMessageBox"
+#include "Data.h"
 
 MainGui::MainGui(QWidget *parent)
 	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({}), isAddFriendGuiOpen(false)
 {
-	//½çÃæ»ù±¾ÉèÖÃ
+	//ç•Œé¢åŸºæœ¬è®¾ç½®
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	setAttribute(Qt::WA_QuitOnClose, true);
 
-	//ÉèÖÃ½çÃæ±êÌâÃûºÍ´óĞ¡
+	//è®¾ç½®ç•Œé¢æ ‡é¢˜åå’Œå¤§å°
 	setWindowTitle(myInfo.id + "-" + myInfo.name);
 	resize(1300, 800);
 	setMinimumSize(size());
 
-	//°Ñ½çÃæ·ÅÔÚÆÁÄ»ÖĞ¼ä
+	//æŠŠç•Œé¢æ”¾åœ¨å±å¹•ä¸­é—´
 	QRect rect = frameGeometry();
 	rect.moveCenter(QApplication::desktop()->availableGeometry().center());
 	move(rect.topLeft());
 
-	//¿Ø¼ş
-	friendList->setFont(QFont(u8"Î¢ÈíÑÅºÚ", 12));
+	//æ§ä»¶
+	friendList->setFont(QFont(u8"å¾®è½¯é›…é»‘", 12));
 	connect(friendList, &QListWidget::itemDoubleClicked, this, &MainGui::friendListItemDoubleClicked);
 
-	//¶¥²ã²Ëµ¥
+	//é¡¶å±‚èœå•
 	QMenuBar *menuBar = new QMenuBar(this);
 	menuBar->setStyleSheet("QMenuBar{background-color:rgb(240,240,240)}");
 
 	QMenu *menu = new QMenu(menuBar);
-	menu->setTitle(tr(u8"²Ëµ¥"));
+	menu->setTitle(tr(u8"èœå•"));
 	menuBar->addMenu(menu);
 
 	QAction *addFriendAction = new QAction(menu);
-	addFriendAction->setText(tr(u8"Ìí¼ÓºÃÓÑ"));
+	addFriendAction->setText(tr(u8"æ·»åŠ å¥½å‹"));
 	connect(addFriendAction, &QAction::triggered, this, &MainGui::addFriendActionTriggered);
 	menu->addAction(addFriendAction);
 
 	QAction *delFriendAction = new QAction(menu);
-	delFriendAction->setText(tr(u8"É¾³ıºÃÓÑ"));
+	delFriendAction->setText(tr(u8"åˆ é™¤å¥½å‹"));
 	connect(delFriendAction, &QAction::triggered, this, &MainGui::delFriendActionTriggered);
 	menu->addAction(delFriendAction);
 
-	//²¼¾Ö
+	//å¸ƒå±€
 	QGridLayout *layout = new QGridLayout(this);
 	layout->addWidget(friendList, 0, 0, -1, 4);
 	layout->addWidget(framePlace, 0, 4, -1, 16);
 	layout->setMenuBar(menuBar);
+
+	Data *data = Data::getInstance();
+	connect(this, &MainGui::getMyUserInfoSignal, data, &Data::getMyUserInfoSlot); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	connect(this, &MainGui::getFriendListSignal, data, &Data::getFriendListSlot); //è·å–å¥½å‹åˆ—è¡¨
+	connect(this, &MainGui::sendMsgSignal, data, &Data::sendMsgSlot); //å‘é€èŠå¤©æ¶ˆæ¯
+	connect(data, &Data::getMyInfoSignal, this, &MainGui::getMyInfoSlot); //è·å–è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+	connect(data, &Data::getFriendListSignal, this, &MainGui::updateFriendList); //è·å–å¥½å‹åˆ—è¡¨å¹¶ä¸”æ›´æ–°å¥½å‹åˆ—è¡¨
+	connect(data, &Data::getMsgSignal, this, &MainGui::getMsgSlot); //æ¥æ”¶åˆ°èŠå¤©ä¿¡æ¯
+	connect(this, &MainGui::addFriendRequestSignal, data, &Data::addFriendRequestSlot); //å‘é€æ·»åŠ å¥½å‹è¯·æ±‚
+	connect(data, &Data::noThisUserSignal, this, &MainGui::noThisUserSignal); //æ·»åŠ å¥½å‹æ—¶è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
+	connect(this, &MainGui::delFriendRequestSignal, data, &Data::delFriendRequestSlot); //å‘é€åˆ é™¤å¥½å‹è¯·æ±‚
+
+	//è·å–ä¸ªäººç”¨æˆ·ä¿¡æ¯å’Œå¥½å‹åˆ—è¡¨
+	emit getMyUserInfoSignal();
+	emit getFriendListSignal();
 }
 
 MainGui::~MainGui()
@@ -59,7 +75,7 @@ MainGui::~MainGui()
 
 void MainGui::resizeEvent(QResizeEvent * event)
 {
-	//°¤¸öÔÚÁÄÌì½çÃæÁĞ±íÖĞ°ÑÃ¿¸öÁÄÌì½çÃæ¶¼¸Ä±ä´óĞ¡
+	//æŒ¨ä¸ªåœ¨èŠå¤©ç•Œé¢åˆ—è¡¨ä¸­æŠŠæ¯ä¸ªèŠå¤©ç•Œé¢éƒ½æ”¹å˜å¤§å°
 	for (ChatFrame *c : chatFramePool)
 	{
 		c->resize(framePlace->size());
@@ -69,50 +85,50 @@ void MainGui::resizeEvent(QResizeEvent * event)
 
 void MainGui::friendListItemDoubleClicked(QListWidgetItem *item)
 {
-	//±éÀúÁÄÌì½çÃæÁĞ±í£¬¿´Õâ¸öºÃÓÑµÄÁÄÌì½çÃæÊÇ·ñ´ò¿ª
+	//éå†èŠå¤©ç•Œé¢åˆ—è¡¨ï¼Œçœ‹è¿™ä¸ªå¥½å‹çš„èŠå¤©ç•Œé¢æ˜¯å¦æ‰“å¼€
 	for (ChatFrame *c : chatFramePool)
 	{
-		//Èç¹û´ò¿ªÁË
+		//å¦‚æœæ‰“å¼€äº†
 		if (c->getID() == item->data(Qt::UserRole + FriendInfoNum::id).toString())
 		{
-			//·Åµ½×î¶¥²ã
+			//æ”¾åˆ°æœ€é¡¶å±‚
 			c->raise();
-			//ÖØÖÃÖ÷½çÃæ±êÌâ
+			//é‡ç½®ä¸»ç•Œé¢æ ‡é¢˜
 			setWindowTitle(windowTitle().split("---")[0] + "---" + c->getID() + "-" + c->getName());
-			//½áÊø
+			//ç»“æŸ
 			return;
 		}
 	}
 
-	//Ã»ÓĞ½áÊøµÄ»°£¬ÄÇ¿Ï¶¨ÊÇÃ»ÓĞ´ò¿ª£¬Ôò´ò¿ª
+	//æ²¡æœ‰ç»“æŸçš„è¯ï¼Œé‚£è‚¯å®šæ˜¯æ²¡æœ‰æ‰“å¼€ï¼Œåˆ™æ‰“å¼€
 	ChatFrame *chatFrame = new ChatFrame(framePlace, UserInfo(item->data(Qt::UserRole + FriendInfoNum::id).toString(), item->data(Qt::UserRole + FriendInfoNum::name).toString()));
 	setWindowTitle(windowTitle().split("---")[0] + "---" + item->data(Qt::UserRole + FriendInfoNum::id).toString() + "-" + item->data(Qt::UserRole + FriendInfoNum::name).toString());
 	chatFrame->resize(framePlace->size());
-	connect(chatFrame, &ChatFrame::sendMsgSignal, this, &MainGui::sendMsgSignal); //·¢ËÍÁÄÌìÏûÏ¢
-	connect(this, &MainGui::getMsgSignal, chatFrame, &ChatFrame::getMsgSlot); //½ÓÊÕÁÄÌìÏûÏ¢
-	chatFramePool.push_back(chatFrame); //¼ÓÈëÁÄÌì½çÃæÁĞ±í
+	connect(chatFrame, &ChatFrame::sendMsgSignal, this, &MainGui::sendMsgSignal); //å‘é€èŠå¤©æ¶ˆæ¯
+	connect(this, &MainGui::getMsgSignal, chatFrame, &ChatFrame::getMsgSlot); //æ¥æ”¶èŠå¤©æ¶ˆæ¯
+	chatFramePool.push_back(chatFrame); //åŠ å…¥èŠå¤©ç•Œé¢åˆ—è¡¨
 	chatFrame->show();
 }
 
 void MainGui::getMyInfoSlot(QString id, QString name)
 {
-	//¸üĞÂ×Ô¼ºµÄÓÃ»§ĞÅÏ¢
+	//æ›´æ–°è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
 	myInfo.id = id;
 	myInfo.name = name;
-	//ÖØÖÃÖ÷½çÃæ±êÌâ
+	//é‡ç½®ä¸»ç•Œé¢æ ‡é¢˜
 	setWindowTitle(myInfo.id + "-" + myInfo.name);
 }
 
 void MainGui::updateFriendList(QStringList friendList)
 {
-	//ÏÈÇå¿ÕÔ­À´µÄºÃÓÑÁĞ±í£¬·ÀÖ¹³öÏÖÖØ¸´ºÃÓÑÏî
+	//å…ˆæ¸…ç©ºåŸæ¥çš„å¥½å‹åˆ—è¡¨ï¼Œé˜²æ­¢å‡ºç°é‡å¤å¥½å‹é¡¹
 	for (int i = 0; i < this->friendList->count(); i++)
 	{
 		delete this->friendList->item(i);
 	}
 	this->friendList->clear();
 
-	//°¤¸öÌí¼Ó
+	//æŒ¨ä¸ªæ·»åŠ 
 	for (QString s : friendList)
 	{
 		QStringList sList = s.split('_');
@@ -123,26 +139,26 @@ void MainGui::updateFriendList(QStringList friendList)
 		this->friendList->addItem(item);
 	}
 
-	//Èç¹ûÊÇ±»É¾³ıºÃÓÑµÄÒ»·½£¬±»¸üĞÂºÃÓÑÁĞ±í£¬ÔòÒª°ÑÏà¹ØµÄ½çÃæÉ¾³ı
+	//å¦‚æœæ˜¯è¢«åˆ é™¤å¥½å‹çš„ä¸€æ–¹ï¼Œè¢«æ›´æ–°å¥½å‹åˆ—è¡¨ï¼Œåˆ™è¦æŠŠç›¸å…³çš„ç•Œé¢åˆ é™¤
 	for (int i = 0; i < chatFramePool.count(); i++)
 	{
-		bool isExist = false; //´ò¿ªµÄÁÄÌìÃæ°åµÄidÊÇ·ñÔÚºÃÓÑÁĞ±íÖĞ
+		bool isExist = false; //æ‰“å¼€çš„èŠå¤©é¢æ¿çš„idæ˜¯å¦åœ¨å¥½å‹åˆ—è¡¨ä¸­
 
-		//¼ì²â´ò¿ªµÄÁÄÌìÃæ°åµÄidÊÇ·ñ´æÔÚºÃÓÑÁĞ±íÖĞ
+		//æ£€æµ‹æ‰“å¼€çš„èŠå¤©é¢æ¿çš„idæ˜¯å¦å­˜åœ¨å¥½å‹åˆ—è¡¨ä¸­
 		for (int j = 0; j < this->friendList->count(); j++)
 		{
 			if (this->friendList->item(j)->data(Qt::UserRole + FriendInfoNum::id).toString() == chatFramePool[i]->getID())
 			{
-				//Èç¹û´æÔÚ
+				//å¦‚æœå­˜åœ¨
 				isExist = true;
 				break;
 			}
 		}
 
-		//Èç¹û²»ÔÚ
+		//å¦‚æœä¸åœ¨
 		if (!isExist)
 		{
-			//²»È»µÄ»°¾Í¹Ø±Õ²¢É¾³ıÕâ¸öÃæ°å
+			//ä¸ç„¶çš„è¯å°±å…³é—­å¹¶åˆ é™¤è¿™ä¸ªé¢æ¿
 			chatFramePool[i]->close();
 			chatFramePool[i]->deleteLater();
 			chatFramePool.removeAt(i);
@@ -152,7 +168,7 @@ void MainGui::updateFriendList(QStringList friendList)
 
 void MainGui::getMsgSlot(QString msg, QString senderID)
 {
-	//ÔÚºÃÓÑÁĞ±íÖĞÕÒµ½ÏàÓ¦µÄ·¢ËÍ·½£¬Ä£ÄâË«»÷¸ÃÏî£¬ÕâÑùÎŞÂÛÕâ¸öºÃÓÑµÄÁÄÌì½çÃæÊÇ·ñ´ò¿ª×îÖÕ¶¼»á´ò¿ª
+	//åœ¨å¥½å‹åˆ—è¡¨ä¸­æ‰¾åˆ°ç›¸åº”çš„å‘é€æ–¹ï¼Œæ¨¡æ‹ŸåŒå‡»è¯¥é¡¹ï¼Œè¿™æ ·æ— è®ºè¿™ä¸ªå¥½å‹çš„èŠå¤©ç•Œé¢æ˜¯å¦æ‰“å¼€æœ€ç»ˆéƒ½ä¼šæ‰“å¼€
 	for (int i = 0; i < friendList->count(); i++)
 	{
 		if (friendList->item(i)->data(Qt::UserRole + FriendInfoNum::id).toString() == senderID)
@@ -166,22 +182,22 @@ void MainGui::getMsgSlot(QString msg, QString senderID)
 
 void MainGui::addFriendActionTriggered()
 {
-	//Ê¹Ìí¼ÓºÃÓÑ½çÃæ³öÏÖµ«ÊÇÆäËûµÄ½çÃæÒÀ¾É¿ÉÒÔ²Ù×÷£¬ÇÒÌí¼ÓºÃÓÑ½çÃæÖ»³öÏÖÒ»¸ö
+	//ä½¿æ·»åŠ å¥½å‹ç•Œé¢å‡ºç°ä½†æ˜¯å…¶ä»–çš„ç•Œé¢ä¾æ—§å¯ä»¥æ“ä½œï¼Œä¸”æ·»åŠ å¥½å‹ç•Œé¢åªå‡ºç°ä¸€ä¸ª
 	if (!isAddFriendGuiOpen)
 	{
 		AddFriendGui *addFriendGui = new AddFriendGui(nullptr, myInfo);
 		isAddFriendGuiOpen = true;
-		connect(addFriendGui, &AddFriendGui::closeSignal, this, [&]() {isAddFriendGuiOpen = false; }); //Ìí¼ÓºÃÓÑ½çÃæÎ¨Ò»
-		connect(addFriendGui, &AddFriendGui::addFriendRequestSignal, this, &MainGui::addFriendRequestSlot); //Ìí¼ÓºÃÓÑ
-		connect(this, &MainGui::addFriendRepeatSignal, addFriendGui, &AddFriendGui::addFriendRepeatSlot); //ÒÑ¾­Ìí¼ÓÁËÕâ¸öºÃÓÑ
-		connect(this, &MainGui::noThisUserSignal, addFriendGui, &AddFriendGui::noThisUserSlot); //Ìí¼ÓºÃÓÑµÄÊ±ºò·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
+		connect(addFriendGui, &AddFriendGui::closeSignal, this, [&]() {isAddFriendGuiOpen = false; }); //æ·»åŠ å¥½å‹ç•Œé¢å”¯ä¸€
+		connect(addFriendGui, &AddFriendGui::addFriendRequestSignal, this, &MainGui::addFriendRequestSlot); //æ·»åŠ å¥½å‹
+		connect(this, &MainGui::addFriendRepeatSignal, addFriendGui, &AddFriendGui::addFriendRepeatSlot); //å·²ç»æ·»åŠ äº†è¿™ä¸ªå¥½å‹
+		connect(this, &MainGui::noThisUserSignal, addFriendGui, &AddFriendGui::noThisUserSlot); //æ·»åŠ å¥½å‹çš„æ—¶å€™è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
 		addFriendGui->show();
 	}
 }
 
 void MainGui::addFriendRequestSlot(QString friendID)
 {
-	//Èç¹ûºÃÓÑÁĞ±íÀïÓĞÕâ¸öÉêÇëµÄid£¬²µ»ØÇëÇó£¬½áÊø
+	//å¦‚æœå¥½å‹åˆ—è¡¨é‡Œæœ‰è¿™ä¸ªç”³è¯·çš„idï¼Œé©³å›è¯·æ±‚ï¼Œç»“æŸ
 	for (int i = 0; i < friendList->count(); i++)
 	{
 		if (friendID == friendList->item(i)->data(Qt::UserRole + FriendInfoNum::id).toString())
@@ -191,23 +207,23 @@ void MainGui::addFriendRequestSlot(QString friendID)
 		}
 	}
 
-	//·ñÔò£¬·¢ËÍºÃÓÑÌí¼ÓÇëÇó
+	//å¦åˆ™ï¼Œå‘é€å¥½å‹æ·»åŠ è¯·æ±‚
 	emit addFriendRequestSignal(friendID);
 }
 
 void MainGui::delFriendActionTriggered()
 {
-	//»ñÈ¡µ±Ç°Ñ¡ÖĞÏî
+	//è·å–å½“å‰é€‰ä¸­é¡¹
 	QList<QListWidgetItem *> items = friendList->selectedItems();
-	//Èç¹ûÓĞ
+	//å¦‚æœæœ‰
 	if (items.count())
 	{
-		//ÅĞ¶ÏÊÇ·ñÒªÉ¾³ıºÃÓÑ
-		if (QMessageBox::warning(this, tr(u8"¾¯¸æ"), tr((QString(u8"ÄãÕæµÄÒªÉ¾³ıÄãµÄºÃÓÑ %1 Âğ£¿").arg(items[0]->data(Qt::UserRole + FriendInfoNum::name).toString()).toUtf8())), QMessageBox::Yes | QMessageBox::Cancel) == QMessageBox::Yes)
+		//åˆ¤æ–­æ˜¯å¦è¦åˆ é™¤å¥½å‹
+		if (QMessageBox::warning(this, tr(u8"è­¦å‘Š"), tr((QString(u8"ä½ çœŸçš„è¦åˆ é™¤ä½ çš„å¥½å‹ %1 å—ï¼Ÿ").arg(items[0]->data(Qt::UserRole + FriendInfoNum::name).toString()).toUtf8())), QMessageBox::Yes | QMessageBox::Cancel) == QMessageBox::Yes)
 		{
-			//ÊÇÔò·¢ËÍÉ¾³ıºÃÓÑÇëÇó
+			//æ˜¯åˆ™å‘é€åˆ é™¤å¥½å‹è¯·æ±‚
 			emit delFriendRequestSignal(items[0]->data(Qt::UserRole + FriendInfoNum::id).toString());
-			//Èç¹ûÁÄÌìÃæ°å´ò¿ªÁËµÄ»°¾ÍÒª¹Ø±Õ
+			//å¦‚æœèŠå¤©é¢æ¿æ‰“å¼€äº†çš„è¯å°±è¦å…³é—­
 			for (int i = 0; i < chatFramePool.count(); i++)
 			{
 				if (chatFramePool[i]->getID() == items[0]->data(Qt::UserRole + FriendInfoNum::id).toString())
@@ -218,7 +234,7 @@ void MainGui::delFriendActionTriggered()
 					break;
 				}
 			}
-			//²¢ÇÒÉ¾³ıºÃÓÑÁĞ±íÀïµÄÏî
+			//å¹¶ä¸”åˆ é™¤å¥½å‹åˆ—è¡¨é‡Œçš„é¡¹
 			friendList->removeItemWidget(items[0]);
 			delete items[0];
 		}

@@ -7,18 +7,22 @@
 #include "maingui.h"
 #include "extern.h"
 
-//后台线程运行的数据类
+//后台线程运行的数据类（单例）
 class Data : public QObject
 {
 	Q_OBJECT
 
-public:
-	Data(QObject *parent);
-	~Data();
-
 private:
-	TcpSocket *connectToServer; //连接到服务器的socket
-	UserInfo *myInfo; //自己的用户信息
+	//单例句柄
+	static Data *instance;
+
+	//构造函数，私有化以防止外部构造
+	Data();
+
+	//连接到服务器的socket
+	TcpSocket *connectToServer = nullptr;
+	//自己的用户信息
+	UserInfo *myInfo = nullptr;
 
 	void loginSuccessHandle(QStringList msgList); //登陆成功的响应
 	void loginFailedHandle(QStringList msgList); //登陆失败的响应
@@ -30,15 +34,16 @@ private:
 	void noThisUserHandle(QStringList msgList); //添加好友时返回没有这个用户
 
 public:
-	//对外的用来做登陆界面和主界面的信号及信号槽的连接的接口
-	void addSignalSlots(LoginGui *loginGui) { emit addSignalSlotsForClassSignal(loginGui); }
-	void addSignalSlots(MainGui *mainGui) { emit addSignalSlotsForClassSignal(mainGui); }
+	//获取单例句柄
+	static Data *getInstance();
+
+	//删除相关的其他构造函数
+	Data(const Data &) = delete;
+	Data &operator=(const Data &) = delete;
+
+	~Data();
 
 signals:
-	//上面说到的接口中发送的信号，使得真正的连接工作在另一个线程中完成
-	void addSignalSlotsForClassSignal(LoginGui *loginGui);
-	void addSignalSlotsForClassSignal(MainGui *mainGui);
-
 	void loginSignal(); //登陆信号
 	void loginFailedSignal(); //登陆失败
 	void loginRepeatSignal(); //重复登陆
@@ -51,13 +56,10 @@ signals:
 	void noThisUserSignal(); //添加好友时返回没有这个用户
 
 private slots:
-	//用来在另一个线程中响应添加信号及信号槽连接的信号槽
-	void addSignalSlotsForClassSlot(LoginGui *loginGui);
-	void addSignalSlotsForClassSlot(MainGui *mainGui);
-
 	void init(); //data类在另一个线程中的初始化
 	void getMsgFromServer(QString msg); //从服务器获取消息
 
+public slots:
 	void loginRequestSlot(QString acountInfo); //发送登陆请求
 	void registerRequestSlot(QString acountInfo); //发送注册请求
 
@@ -65,6 +67,9 @@ private slots:
 
 	void addFriendRequestSlot(QString friendID); //发送添加好友请求
 	void delFriendRequestSlot(QString friendID); //发送删除好友请求
+
+	void getMyUserInfoSlot(); //获取自己的用户信息
+	void getFriendListSlot(); //获取好友列表
 };
 
 #endif // DATA_H

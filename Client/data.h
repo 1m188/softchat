@@ -2,7 +2,7 @@
 #define DATA_H
 
 #include <QObject>
-#include "tcpsocket.h"
+#include "QWebSocket"
 #include "logingui.h"
 #include "maingui.h"
 #include "extern.h"
@@ -20,7 +20,7 @@ private:
 	Data();
 
 	//连接到服务器的socket
-	TcpSocket *connectToServer = nullptr;
+	QWebSocket *connectToServer = nullptr;
 	//自己的用户信息
 	UserInfo *myInfo = nullptr;
 

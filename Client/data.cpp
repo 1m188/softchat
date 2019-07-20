@@ -37,10 +37,10 @@ Data::~Data()
 
 void Data::init()
 {
-	connectToServer = new TcpSocket(nullptr); //初始化和服务器连接的socket
-	connect(this, &Data::destroyed, connectToServer, &TcpSocket::deleteLater); //资源管理
-	connect(connectToServer, &TcpSocket::getMsgSignal, this, &Data::getMsgFromServer); //从服务器获取的消息处理
-	connectToServer->connectToHost("127.0.0.1", 8888); //连接到相关服务器（本地）的8888端口
+	connectToServer = new QWebSocket(nullptr); //初始化和服务器连接的socket
+	connect(this, &Data::destroyed, connectToServer, &QWebSocket::deleteLater); //资源管理
+	connect(connectToServer, &QWebSocket::textMessageReceived, this, &Data::getMsgFromServer); //从服务器获取的消息处理
+	connectToServer->open(QUrl("ws://127.0.0.1:8888")); //连接到相关服务器（本地）的8888端口
 
 	myInfo = new UserInfo(); //初始化自己的用户信息
 }
@@ -156,36 +156,36 @@ void Data::noThisUserHandle(QStringList msgList)
 void Data::loginRequestSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->writeMsg(QString("LoginRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
+	connectToServer->sendTextMessage(QString("LoginRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
 }
 
 void Data::registerRequestSlot(QString acountInfo)
 {
 	QStringList acountInfoList = acountInfo.split(' ');
-	connectToServer->writeMsg(QString("RegisterRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
+	connectToServer->sendTextMessage(QString("RegisterRequest %1 %2").arg(acountInfoList[0]).arg(acountInfoList[1]));
 }
 
 void Data::sendMsgSlot(QString msg, QString recverID)
 {
-	connectToServer->writeMsg(QString("Message %1 %2 %3").arg(myInfo->id).arg(recverID).arg(msg));
+	connectToServer->sendTextMessage(QString("Message %1 %2 %3").arg(myInfo->id).arg(recverID).arg(msg));
 }
 
 void Data::addFriendRequestSlot(QString friendID)
 {
-	connectToServer->writeMsg(QString("AddFriendRequest %1").arg(friendID));
+	connectToServer->sendTextMessage(QString("AddFriendRequest %1").arg(friendID));
 }
 
 void Data::delFriendRequestSlot(QString friendID)
 {
-	connectToServer->writeMsg(QString("DelFriendRequest %1").arg(friendID));
+	connectToServer->sendTextMessage(QString("DelFriendRequest %1").arg(friendID));
 }
 
 void Data::getMyUserInfoSlot()
 {
-	connectToServer->writeMsg("MyInfoRequest"); //发送自己用户信息请求
+	connectToServer->sendTextMessage("MyInfoRequest"); //发送自己用户信息请求
 }
 
 void Data::getFriendListSlot()
 {
-	connectToServer->writeMsg("FriendListRequest"); //发送好友列表请求
+	connectToServer->sendTextMessage("FriendListRequest"); //发送好友列表请求
 }

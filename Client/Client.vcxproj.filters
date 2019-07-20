@@ -39,9 +39,6 @@
     <Filter Include="界面\聊天面板">
       <UniqueIdentifier>{0ecd09c4-3f8d-4c97-bd46-1fad7fc9eee6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="socket">
-      <UniqueIdentifier>{cad4aa6c-561e-4dc4-b2e8-73c960f7a198}</UniqueIdentifier>
-    </Filter>
     <Filter Include="界面\添加好友界面">
       <UniqueIdentifier>{bcfff16e-329f-416d-a9a1-1fe25d286d20}</UniqueIdentifier>
     </Filter>
@@ -53,9 +50,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_logingui.cpp">
       <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_logingui.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_data.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -69,35 +63,17 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_maingui.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_maingui.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_registergui.cpp">
       <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_registergui.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_chatframe.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_chatframe.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_tcpsocket.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_tcpsocket.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_addfriendgui.cpp">
       <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_addfriendgui.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="TcpSocket.cpp">
-      <Filter>socket</Filter>
     </ClCompile>
     <ClCompile Include="LoginGui.cpp">
       <Filter>界面\登陆界面</Filter>
@@ -121,9 +97,6 @@
     </CustomBuild>
     <CustomBuild Include="data.h">
       <Filter>数据处理</Filter>
-    </CustomBuild>
-    <CustomBuild Include="TcpSocket.h">
-      <Filter>socket</Filter>
     </CustomBuild>
     <CustomBuild Include="LoginGui.h">
       <Filter>界面\登陆界面</Filter>

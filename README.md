@@ -1,4 +1,4 @@
-# soft_chat
+# softchat
 用Qt写的一个简单的IM程序。
 1. 技术使用MySQL数据库 5.7.19-log MySQL Community Server，vs2015，Qt5.9.1 32位。后来改为QSQLITE，vs2017和Qt5.12.3。
 2. 在Server项目中的server.cpp的构造函数中有一个连接本地（127.0.0.1）一个叫做softchat的MySQL数据库的操作，所以如果想要连接自己的数据库的话，那里应该要改一下。

@@ -2,9 +2,9 @@
 #include "QThread"
 #include "QApplication"
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #include "QDebug"
-#endif // _DEBUG
+#endif // DEBUG
 
 Data *Data::instance = nullptr; //初始化单例句柄
 
@@ -48,9 +48,9 @@ void Data::init()
 void Data::getMsgFromServer(QString msg)
 {
 	//输出调试信息
-#ifdef _DEBUG
+#ifdef DEBUG
 	qDebug() << msg;
-#endif // _DEBUG
+#endif // DEBUG
 
 	//获取消息通过空格分隔的列表
 	QStringList msgList = msg.split(' ');

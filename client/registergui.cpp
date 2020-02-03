@@ -1,4 +1,4 @@
-﻿#include "RegisterGui.h"
+﻿#include "registergui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"

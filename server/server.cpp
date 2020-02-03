@@ -1,4 +1,4 @@
-﻿#include "Server.h"
+﻿#include "server.h"
 #include "QDebug"
 
 Server::Server(QObject *parent) :QWebSocketServer("", QWebSocketServer::NonSecureMode)

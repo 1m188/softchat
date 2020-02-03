@@ -1,4 +1,4 @@
-﻿#include "AddFriendGui.h"
+﻿#include "addfriendgui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QLabel"

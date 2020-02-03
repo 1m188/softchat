@@ -1,7 +1,7 @@
 #ifndef REGISTERGUI_H
 #define REGISTERGUI_H
 
-#include <QDialog>
+#include "QDialog"
 #include "QLineEdit"
 
 //×¢²á½çÃæ

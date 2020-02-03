@@ -1,13 +1,13 @@
-﻿#include <QtWidgets/QApplication>
-#include "Server.h"
+﻿#include "QCoreApplication"
+#include "server.h"
 
 int main(int argc, char *argv[])
 {
-#ifdef NDEBUG
+#ifdef RELEASE
 	QApplication::addLibraryPath("./plugins"); //做发布版本时要加上
-#endif // NDEBUG
+#endif // RELEASE
 
-	QApplication a(argc, argv);
+	QCoreApplication a(argc, argv);
 
 	Server server(nullptr);
 

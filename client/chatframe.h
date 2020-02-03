@@ -1,7 +1,7 @@
 #ifndef CHATFRAME_H
 #define CHATFRAME_H
 
-#include <QFrame>
+#include "QFrame"
 #include "QTextEdit"
 #include "extern.h"
 

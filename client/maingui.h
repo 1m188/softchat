@@ -1,9 +1,9 @@
 ﻿#ifndef MAINGUI_H
 #define MAINGUI_H
 
-#include <QWidget>
+#include "QWidget"
 #include "QListWidget"
-#include "ChatFrame.h"
+#include "chatframe.h"
 #include "extern.h"
 
 //主界面

@@ -1,4 +1,4 @@
-﻿#include "ChatFrame.h"
+﻿#include "chatframe.h"
 #include "QPushButton"
 #include "QGridLayout"
 #include "QEvent"

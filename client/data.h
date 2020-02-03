@@ -1,7 +1,7 @@
 ﻿#ifndef DATA_H
 #define DATA_H
 
-#include <QObject>
+#include "QObject"
 #include "QWebSocket"
 #include "logingui.h"
 #include "maingui.h"

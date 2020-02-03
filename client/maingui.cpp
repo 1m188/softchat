@@ -1,11 +1,11 @@
-﻿#include "MainGui.h"
+﻿#include "maingui.h"
 #include "QApplication"
 #include "QDeskTopWidget"
 #include "QMenuBar"
 #include "QGridLayout"
-#include "AddFriendGui.h"
+#include "addFriendgui.h"
 #include "QMessageBox"
-#include "Data.h"
+#include "data.h"
 
 MainGui::MainGui(QWidget *parent)
 	: QWidget(parent), myInfo({}), friendList(new QListWidget(this)), framePlace(new QWidget(this)), chatFramePool({}), isAddFriendGuiOpen(false)

@@ -1,7 +1,7 @@
 ﻿#ifndef LOGINGUI_H
 #define LOGINGUI_H
 
-#include <QDialog>
+#include "QDialog"
 #include "QLineEdit"
 
 //登陆界面

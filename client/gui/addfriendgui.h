@@ -1,36 +1,33 @@
-#ifndef ADDFRIENDGUI_H
-#define ADDFRIENDGUI_H
+#pragma once
 
-#include <QWidget>
 #include "QLineEdit"
+#include <QWidget>
+
 #include "extern.h"
 
-//Ìí¼ÓºÃÓÑ½çÃæ
+//æ·»åŠ å¥½å‹ç•Œé¢
 class AddFriendGui : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	AddFriendGui(QWidget *parent, UserInfo myInfo);
-	~AddFriendGui();
+  public:
+    AddFriendGui(QWidget *parent, UserInfo myInfo);
 
-private:
-	UserInfo myInfo; //×Ô¼ºµÄÓÃ»§ĞÅÏ¢
-	QLineEdit *idLineEdit; //ÒªÌí¼ÓµÄºÃÓÑidÊäÈë¿ò
+  private:
+    UserInfo myInfo;       //è‡ªå·±çš„ç”¨æˆ·ä¿¡æ¯
+    QLineEdit *idLineEdit; //è¦æ·»åŠ çš„å¥½å‹idè¾“å…¥æ¡†
 
-protected:
-	void closeEvent(QCloseEvent *event) override; //ÖØĞ´µÄ¹Ø±ÕÊÂ¼ş
+  protected:
+    void closeEvent(QCloseEvent *event) override; //é‡å†™çš„å…³é—­äº‹ä»¶
 
-signals:
-	void closeSignal(); //×ÔÉí¹Ø±ÕµÄÊ±ºò·¢³öĞÅºÅ
-	void addFriendRequestSignal(QString friendID); //Ìí¼ÓºÃÓÑĞÅºÅ
+  signals:
+    void closeSignal();                            //è‡ªèº«å…³é—­çš„æ—¶å€™å‘å‡ºä¿¡å·
+    void addFriendRequestSignal(QString friendID); //æ·»åŠ å¥½å‹ä¿¡å·
 
-	private slots:
-	void addButtonClicked(); //Ìí¼ÓºÃÓÑ°´Å¥°´ÏÂ
+  private slots:
+    void addButtonClicked(); //æ·»åŠ å¥½å‹æŒ‰é’®æŒ‰ä¸‹
 
-	public slots:
-	void addFriendRepeatSlot(); //ÒÑ¾­Ìí¼ÓÁËÕâ¸öºÃÓÑ
-	void noThisUserSlot(); //Ìí¼ÓºÃÓÑµÄÊ±ºò·µ»ØÃ»ÓĞÕâ¸öÓÃ»§
+  public slots:
+    void addFriendRepeatSlot(); //å·²ç»æ·»åŠ äº†è¿™ä¸ªå¥½å‹
+    void noThisUserSlot();      //æ·»åŠ å¥½å‹çš„æ—¶å€™è¿”å›æ²¡æœ‰è¿™ä¸ªç”¨æˆ·
 };
-
-#endif // ADDFRIENDGUI_H

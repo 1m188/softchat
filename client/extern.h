@@ -1,23 +1,24 @@
-#ifndef EXTERN_H
-#define EXTERN_H
+#pragma once
 
 #include "QString"
 
-//好友项相关信息的索引枚举
-const enum FriendInfoNum
+//濂藉弸椤圭浉鍏充俊鎭殑绱㈠紩鏋氫妇
+enum FriendInfoNum
 {
-	id,
-	name,
+    id,
+    name,
 };
 
-//用户信息
+//鐢ㄦ埛淇℃伅
 struct UserInfo
 {
-	QString id; //id
-	QString name; //昵称
+    QString id;   // id
+    QString name; //鏄电О
 
-	UserInfo::UserInfo() :id(""), name("") {}
-	UserInfo::UserInfo(QString id, QString name) : id(id), name(name) {}
+    UserInfo() : id(""), name("")
+    {
+    }
+    UserInfo(QString id, QString name) : id(id), name(name)
+    {
+    }
 };
-
-#endif // !EXTERN_H

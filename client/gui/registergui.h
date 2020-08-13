@@ -1,30 +1,26 @@
-#ifndef REGISTERGUI_H
-#define REGISTERGUI_H
+#pragma once
 
 #include "QDialog"
 #include "QLineEdit"
 
-//×¢²á½çÃæ
+//æ³¨å†Œç•Œé¢
 class RegisterGui : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	RegisterGui(QWidget *parent);
-	~RegisterGui();
+  public:
+    RegisterGui(QWidget *parent);
 
-private:
-	QLineEdit *nameLineEdit; //êÇ³ÆÊäÈë¿ò
-	QLineEdit *passwordLineEdit; //ÃÜÂëÊäÈë¿ò
+  private:
+    QLineEdit *nameLineEdit;     //æ˜µç§°è¾“å…¥æ¡†
+    QLineEdit *passwordLineEdit; //å¯†ç è¾“å…¥æ¡†
 
-signals:
-	void registerRequestSignal(QString acountInfo); //×¢²áÇëÇó
+  signals:
+    void registerRequestSignal(QString acountInfo); //æ³¨å†Œè¯·æ±‚
 
-	private slots:
-	void registerButtonClicked(); //×¢²á°´Å¥°´ÏÂ
+  private slots:
+    void registerButtonClicked(); //æ³¨å†ŒæŒ‰é’®æŒ‰ä¸‹
 
-	public slots:
-	void registerSuccessSlot(QString id); //×¢²á³É¹¦ÏìÓ¦
+  public slots:
+    void registerSuccessSlot(QString id); //æ³¨å†ŒæˆåŠŸå“åº”
 };
-
-#endif // REGISTERGUI_H

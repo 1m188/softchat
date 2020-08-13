@@ -1,39 +1,42 @@
-#ifndef CHATFRAME_H
-#define CHATFRAME_H
+#pragma once
 
 #include "QFrame"
 #include "QTextEdit"
+
 #include "extern.h"
 
-//ÁÄÌìÃæ°å
+//èŠå¤©é¢æ¿
 class ChatFrame : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	ChatFrame(QWidget *parent, UserInfo friendInfo);
-	~ChatFrame();
+  public:
+    ChatFrame(QWidget *parent, UserInfo friendInfo);
 
-private:
-	UserInfo friendInfo; //¸ÃÁÄÌìÃæ°å´ú±íµÄºÃÓÑµÄÓÃ»§ĞÅÏ¢
-	QTextEdit *sendTextEdit; //·¢ËÍÏûÏ¢µÄtextedit
-	QTextEdit *recvTextEdit; //½ÓÊÕÏûÏ¢µÄtextedit
+  private:
+    UserInfo friendInfo;     //è¯¥èŠå¤©é¢æ¿ä»£è¡¨çš„å¥½å‹çš„ç”¨æˆ·ä¿¡æ¯
+    QTextEdit *sendTextEdit; //å‘é€æ¶ˆæ¯çš„textedit
+    QTextEdit *recvTextEdit; //æ¥æ”¶æ¶ˆæ¯çš„textedit
 
-public:
-	const QString getID() const { return friendInfo.id; } //»ñÈ¡¸ÃºÃÓÑid
-	const QString getName() const { return friendInfo.name; } //»ñÈ¡¸ÃºÃÓÑêÇ³Æ
+  public:
+    const QString getID() const //è·å–è¯¥å¥½å‹id
+    {
+        return friendInfo.id;
+    }
+    const QString getName() const //è·å–è¯¥å¥½å‹æ˜µç§°
+    {
+        return friendInfo.name;
+    }
 
-protected:
-	bool eventFilter(QObject *watched, QEvent *event) override; //ÊÂ¼ş¹ıÂËÆ÷
+  protected:
+    bool eventFilter(QObject *watched, QEvent *event) override; //äº‹ä»¶è¿‡æ»¤å™¨
 
-signals:
-	void sendMsgSignal(QString msg, QString recverID); //·¢ËÍÁÄÌìÏûÏ¢
+  signals:
+    void sendMsgSignal(QString msg, QString recverID); //å‘é€èŠå¤©æ¶ˆæ¯
 
-	private slots:
-	void sendButtonClicked(); //µ¥»÷·¢ËÍ°´Å¥
+  private slots:
+    void sendButtonClicked(); //å•å‡»å‘é€æŒ‰é’®
 
-	public slots:
-	void getMsgSlot(QString msg, QString senderID); //½ÓÊÕºÃÓÑµÄÁÄÌìÏûÏ¢
+  public slots:
+    void getMsgSlot(QString msg, QString senderID); //æ¥æ”¶å¥½å‹çš„èŠå¤©æ¶ˆæ¯
 };
-
-#endif // CHATFRAME_H

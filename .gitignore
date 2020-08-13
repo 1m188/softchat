@@ -1,5 +1,9 @@
 # 忽略vscode配置
-.vscode
+.vscode/*
 
 # 忽略生成文件
-build
+build/*
+
+compile_commands.json
+
+.clangd/*

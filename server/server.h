@@ -10,7 +10,7 @@ class Server : public QWebSocketServer
     Q_OBJECT
 
   public:
-    Server(QObject *parent);
+    Server();
     ~Server();
 
   private:

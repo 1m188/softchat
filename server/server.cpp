@@ -2,7 +2,7 @@
 
 #include "QDebug"
 
-Server::Server(QObject *parent) : QWebSocketServer("", QWebSocketServer::NonSecureMode)
+Server::Server() : QWebSocketServer("", QWebSocketServer::NonSecureMode)
 {
     //初始化本地连接数据库
     database.setDatabaseName("softchat.db");

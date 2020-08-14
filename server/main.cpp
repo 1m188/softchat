@@ -10,6 +10,6 @@ int main(int argc, char *argv[])
 #endif                                         // RELEASE
 
     QCoreApplication a(argc, argv);
-    Server server(nullptr);
+    Server server;
     return a.exec();
 }

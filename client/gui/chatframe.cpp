@@ -9,7 +9,7 @@ ChatFrame::ChatFrame(QWidget *parent, UserInfo friendInfo)
     : QFrame(parent), friendInfo(friendInfo), sendTextEdit(new QTextEdit(this)), recvTextEdit(new QTextEdit(this))
 {
     //控件
-    recvTextEdit->setReadOnly(true); //将接收消息文本框设置为只读
+    recvTextEdit->setReadOnly(true);        //将接收消息文本框设置为只读
     sendTextEdit->installEventFilter(this); //安装事件过滤器，以实现回车键发送消息，其他键+回车键换行的功能
 
     QPushButton *sendButton = new QPushButton(this);

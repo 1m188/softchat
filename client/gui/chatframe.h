@@ -10,15 +10,15 @@ class ChatFrame : public QFrame
 {
     Q_OBJECT
 
-  public:
+public:
     ChatFrame(QWidget *parent, UserInfo friendInfo);
 
-  private:
+private:
     UserInfo friendInfo;     //该聊天面板代表的好友的用户信息
     QTextEdit *sendTextEdit; //发送消息的textedit
     QTextEdit *recvTextEdit; //接收消息的textedit
 
-  public:
+public:
     const QString getID() const //获取该好友id
     {
         return friendInfo.id;
@@ -28,15 +28,15 @@ class ChatFrame : public QFrame
         return friendInfo.name;
     }
 
-  protected:
+protected:
     bool eventFilter(QObject *watched, QEvent *event) override; //事件过滤器
 
-  signals:
+signals:
     void sendMsgSignal(QString msg, QString recverID); //发送聊天消息
 
-  private slots:
+private slots:
     void sendButtonClicked(); //单击发送按钮
 
-  public slots:
+public slots:
     void getMsgSlot(QString msg, QString senderID); //接收好友的聊天消息
 };

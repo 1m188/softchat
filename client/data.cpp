@@ -36,10 +36,10 @@ Data::~Data()
 
 void Data::init()
 {
-    connectToServer = new QWebSocket(nullptr);                                  //初始化和服务器连接的socket
-    connect(this, &Data::destroyed, connectToServer, &QWebSocket::deleteLater); //资源管理
+    connectToServer = new QWebSocket(nullptr);                                                 //初始化和服务器连接的socket
+    connect(this, &Data::destroyed, connectToServer, &QWebSocket::deleteLater);                //资源管理
     connect(connectToServer, &QWebSocket::textMessageReceived, this, &Data::getMsgFromServer); //从服务器获取的消息处理
-    connectToServer->open(QUrl("ws://127.0.0.1:8888")); //连接到相关服务器（本地）的8888端口
+    connectToServer->open(QUrl("ws://127.0.0.1:8888"));                                        //连接到相关服务器（本地）的8888端口
 
     myInfo = new UserInfo(); //初始化自己的用户信息
 }

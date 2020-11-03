@@ -1,7 +1,7 @@
 #include "registergui.h"
 
-// #include "QApplication"
-// #include "QDeskTopWidget"
+#include "QApplication"
+#include "QScreen"
 #include "QLabel"
 #include "QMessageBox"
 #include "QPushButton"
@@ -19,9 +19,9 @@ RegisterGui::RegisterGui(QWidget *parent)
     setFixedSize(600, 300);
 
     //移动到屏幕中央
-    // QRect rect = frameGeometry();
-    // rect.moveCenter(QApplication::desktop()->availableGeometry().center());
-    // move(rect.topLeft());
+    QRect rect = frameGeometry();
+    rect.moveCenter(qApp->primaryScreen()->availableGeometry().center());
+    move(rect.topLeft());
 
     //控件+布局
     QLabel *infoLabel = new QLabel(this);

@@ -1,7 +1,7 @@
 #include "maingui.h"
 
-// #include "QApplication"
-// #include "QDeskTopWidget"
+#include "QApplication"
+#include "QScreen"
 #include "QGridLayout"
 #include "QMenuBar"
 #include "QMessageBox"
@@ -23,9 +23,9 @@ MainGui::MainGui(QWidget *parent)
     setMinimumSize(size());
 
     //把界面放在屏幕中间
-    // QRect rect = frameGeometry();
-    // rect.moveCenter(QApplication::desktop()->availableGeometry().center());
-    // move(rect.topLeft());
+    QRect rect = frameGeometry();
+    rect.moveCenter(qApp->primaryScreen()->availableGeometry().center());
+    move(rect.topLeft());
 
     //控件
     friendList->setFont(QFont(u8"微软雅黑", 12));
@@ -56,14 +56,14 @@ MainGui::MainGui(QWidget *parent)
     layout->setMenuBar(menuBar);
 
     Data *data = Data::getInstance();
-    connect(this, &MainGui::getMyUserInfoSignal, data, &Data::getMyUserInfoSlot); //获取自己的用户信息
-    connect(this, &MainGui::getFriendListSignal, data, &Data::getFriendListSlot); //获取好友列表
-    connect(this, &MainGui::sendMsgSignal, data, &Data::sendMsgSlot);             //发送聊天消息
-    connect(data, &Data::getMyInfoSignal, this, &MainGui::getMyInfoSlot);         //获取自己的用户信息
-    connect(data, &Data::getFriendListSignal, this, &MainGui::updateFriendList); //获取好友列表并且更新好友列表
-    connect(data, &Data::getMsgSignal, this, &MainGui::getMsgSlot);              //接收到聊天信息
+    connect(this, &MainGui::getMyUserInfoSignal, data, &Data::getMyUserInfoSlot);       //获取自己的用户信息
+    connect(this, &MainGui::getFriendListSignal, data, &Data::getFriendListSlot);       //获取好友列表
+    connect(this, &MainGui::sendMsgSignal, data, &Data::sendMsgSlot);                   //发送聊天消息
+    connect(data, &Data::getMyInfoSignal, this, &MainGui::getMyInfoSlot);               //获取自己的用户信息
+    connect(data, &Data::getFriendListSignal, this, &MainGui::updateFriendList);        //获取好友列表并且更新好友列表
+    connect(data, &Data::getMsgSignal, this, &MainGui::getMsgSlot);                     //接收到聊天信息
     connect(this, &MainGui::addFriendRequestSignal, data, &Data::addFriendRequestSlot); //发送添加好友请求
-    connect(data, &Data::noThisUserSignal, this, &MainGui::noThisUserSignal); //添加好友时返回没有这个用户
+    connect(data, &Data::noThisUserSignal, this, &MainGui::noThisUserSignal);           //添加好友时返回没有这个用户
     connect(this, &MainGui::delFriendRequestSignal, data, &Data::delFriendRequestSlot); //发送删除好友请求
 
     //获取个人用户信息和好友列表
@@ -182,7 +182,7 @@ void MainGui::addFriendActionTriggered()
         AddFriendGui *addFriendGui = new AddFriendGui(nullptr, myInfo);
         isAddFriendGuiOpen = true;
         connect(addFriendGui, &AddFriendGui::closeSignal, this,
-                [&]() { isAddFriendGuiOpen = false; }); //添加好友界面唯一
+                [&]() { isAddFriendGuiOpen = false; });                                                     //添加好友界面唯一
         connect(addFriendGui, &AddFriendGui::addFriendRequestSignal, this, &MainGui::addFriendRequestSlot); //添加好友
         connect(this, &MainGui::addFriendRepeatSignal, addFriendGui,
                 &AddFriendGui::addFriendRepeatSlot); //已经添加了这个好友

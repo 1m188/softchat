@@ -1,7 +1,7 @@
 #include "logingui.h"
 
-// #include "QApplication"
-// #include "QDeskTopWidget"
+#include "QApplication"
+#include "QScreen"
 #include "QLabel"
 #include "QMessageBox"
 #include "QPushButton"
@@ -22,9 +22,9 @@ LoginGui::LoginGui(QWidget *parent)
     setFixedSize(600, 300);
 
     //把界面移动到屏幕中央
-    // QRect rect = frameGeometry();
-    // rect.moveCenter(QApplication::desktop()->availableGeometry().center());
-    // move(rect.topLeft());
+    QRect rect = frameGeometry();
+    rect.moveCenter(qApp->primaryScreen()->availableGeometry().center());
+    move(rect.topLeft());
 
     //控件+布局
     QLabel *infoLabel = new QLabel(this);

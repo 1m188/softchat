@@ -8,19 +8,19 @@ class RegisterGui : public QDialog
 {
     Q_OBJECT
 
-  public:
+public:
     RegisterGui(QWidget *parent);
 
-  private:
+private:
     QLineEdit *nameLineEdit;     //昵称输入框
     QLineEdit *passwordLineEdit; //密码输入框
 
-  signals:
+signals:
     void registerRequestSignal(QString acountInfo); //注册请求
 
-  private slots:
+private slots:
     void registerButtonClicked(); //注册按钮按下
 
-  public slots:
+public slots:
     void registerSuccessSlot(QString id); //注册成功响应
 };

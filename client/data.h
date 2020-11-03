@@ -11,7 +11,7 @@ class Data : public QObject
 {
     Q_OBJECT
 
-  private:
+private:
     //单例句柄
     static Data *instance;
 
@@ -32,7 +32,7 @@ class Data : public QObject
     void messageHandle(QStringList msgList);         //接收好友发送过来的聊天消息的响应
     void noThisUserHandle(QStringList msgList);      //添加好友时返回没有这个用户
 
-  public:
+public:
     //获取单例句柄
     static Data *getInstance();
 
@@ -42,7 +42,7 @@ class Data : public QObject
 
     ~Data();
 
-  signals:
+signals:
     void loginSignal();                     //登陆信号
     void loginFailedSignal();               //登陆失败
     void loginRepeatSignal();               //重复登陆
@@ -54,11 +54,11 @@ class Data : public QObject
 
     void noThisUserSignal(); //添加好友时返回没有这个用户
 
-  private slots:
+private slots:
     void init();                        // data类在另一个线程中的初始化
     void getMsgFromServer(QString msg); //从服务器获取消息
 
-  public slots:
+public slots:
     void loginRequestSlot(QString acountInfo);    //发送登陆请求
     void registerRequestSlot(QString acountInfo); //发送注册请求
 

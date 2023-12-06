@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
 
 #ifdef RELEASE
-    QApplication::addLibraryPath("./plugins"); //做发布版本时要加上
+    QCoreApplication::addLibraryPath("./plugins"); //做发布版本时要加上
 #endif                                         // RELEASE
 
     QCoreApplication a(argc, argv);

@@ -7,3 +7,9 @@ build/*
 compile_commands.json
 
 .clangd/*
+
+# 忽略缓存
+.cache
+
+# 忽略xmake缓存
+.xmake
